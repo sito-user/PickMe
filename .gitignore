@@ -1,0 +1,54 @@
+## Visual Studio / VS Code
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Build outputs
+[Bb]in/
+[Oo]bj/
+
+## NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## ASP.NET Core / Publish
+**/publish/
+**/PublishProfiles/
+launchSettings.json
+
+## Entity Framework migrations snapshot (optional — keep if you version them)
+# **/Migrations/
+
+## Logs & runtime
+*.log
+*.log.*
+logs/
+
+## User secrets / sensitive config
+**/appsettings.Development.json
+**/appsettings.Local.json
+secrets.json
+
+## OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+## Rider
+.idea/
+*.sln.iml
+
+## Test results
+TestResults/
+[Tt]est[Rr]esult*/
+BenchmarkDotNet.Artifacts/
