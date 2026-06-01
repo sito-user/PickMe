@@ -1,0 +1,833 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutClient.cshtml";
+    var livreurs = ViewData["Livreurs"] as List<DeliveryWeb.Models.Livreur> ?? new();
+}
+
+@section Styles {
+<style>
+    .page-header { margin-bottom:24px; }
+    .page-header h1 { font-family:'Nunito',sans-serif; font-size:24px; font-weight:800; color:#1a1a1a; }
+    .page-header p { font-size:14px; color:#aaa; margin-top:4px; }
+
+    .steps-nav { display:flex; align-items:center; gap:0; margin-bottom:28px; flex-wrap:wrap; gap:4px; }
+    .step-nav-item { display:flex; align-items:center; gap:8px; }
+    .step-nav-num { width:28px; height:28px; border-radius:50%; background:#ece9e4; color:#aaa; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; transition:all .2s; }
+    .step-nav-num.active { background:#ff6a00; color:#fff; }
+    .step-nav-num.done { background:#22c55e; color:#fff; }
+    .step-nav-label { font-size:12px; color:#aaa; font-weight:600; white-space:nowrap; }
+    .step-nav-label.active { color:#ff6a00; }
+    .step-nav-sep { flex:1; height:2px; background:#ece9e4; margin:0 8px; min-width:16px; }
+
+    .form-card { background:#fff; border:1px solid #ece9e4; border-radius:16px; padding:24px; margin-bottom:16px; }
+    .card-title { font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; color:#1a1a1a; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+
+    .vehicule-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .vehicule-opt { border:1.5px solid #ece9e4; border-radius:12px; padding:16px 10px; text-align:center; cursor:pointer; transition:all .15s; }
+    .vehicule-opt.selected { border-color:#ff6a00; background:#fff3ed; }
+    .vehicule-opt input[type=radio] { display:none; }
+    .vehicule-icon { font-size:28px; margin-bottom:6px; }
+    .vehicule-label { font-size:13px; font-weight:800; color:#1a1a1a; font-family:'Nunito',sans-serif; }
+    .vehicule-tarif { font-size:11px; color:#aaa; margin-top:2px; }
+
+    .express-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .express-opt { border:1.5px solid #ece9e4; border-radius:12px; padding:16px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:12px; }
+    .express-opt.selected { border-color:#ff6a00; background:#fff3ed; }
+    .express-opt input[type=radio] { display:none; }
+    .express-icon { font-size:24px; flex-shrink:0; }
+    .express-label { font-size:14px; font-weight:800; color:#1a1a1a; font-family:'Nunito',sans-serif; }
+    .express-desc { font-size:11px; color:#aaa; margin-top:2px; }
+
+    #map { height:240px; border-radius:12px; border:1.5px solid #ece9e4; margin-bottom:12px; }
+
+    .field { margin-bottom:12px; }
+    .field label { display:block; font-size:11px; color:#aaa; font-weight:600; margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px; }
+    .field input, .field select, .field textarea { width:100%; background:#fafaf9; border:1.5px solid #ece9e4; border-radius:10px; padding:11px 14px; color:#1a1a1a; font-size:14px; font-family:'Plus Jakarta Sans',sans-serif; transition:border .15s; }
+    .field input:focus, .field select:focus, .field textarea:focus { outline:none; border-color:#ff6a00; background:#fff; }
+    .field input::placeholder { color:#ccc; }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+
+    .map-hint { font-size:12px; color:#aaa; text-align:center; margin-bottom:12px; padding:8px; background:#f7f5f2; border-radius:8px; }
+
+    .livreur-list { display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; }
+    .livreur-item { display:flex; align-items:center; gap:12px; padding:12px 14px; border:1.5px solid #ece9e4; border-radius:11px; cursor:pointer; transition:all .15s; }
+    .livreur-item:hover, .livreur-item.selected { border-color:#ff6a00; background:#fff3ed; }
+    .livreur-avatar { width:38px; height:38px; background:#ff6a00; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; flex-shrink:0; }
+    .livreur-name { font-size:13px; font-weight:700; color:#1a1a1a; }
+    .livreur-meta { font-size:11px; color:#aaa; }
+    .livreur-note { margin-left:auto; font-size:12px; color:#ff6a00; font-weight:700; white-space:nowrap; }
+    .no-livreur { text-align:center; padding:24px; color:#aaa; font-size:13px; background:#f7f5f2; border-radius:10px; }
+
+    .prix-box { background:#fff3ed; border:1.5px solid #ffd4b8; border-radius:13px; padding:18px 20px; display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .prix-value { font-family:'Nunito',sans-serif; font-size:28px; font-weight:900; color:#ff6a00; }
+    .prix-tags { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
+    .prix-tag { font-size:10px; background:#fff; border:1px solid #ffd4b8; color:#ff6a00; padding:3px 8px; border-radius:10px; font-weight:600; }
+
+    .paiement-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+    .paiement-opt { border:1.5px solid #ece9e4; border-radius:12px; padding:14px; text-align:center; cursor:pointer; transition:all .15s; }
+    .paiement-opt.selected { border-color:#ff6a00; background:#fff3ed; }
+    .paiement-opt input { display:none; }
+    .paiement-icon { font-size:22px; margin-bottom:6px; }
+    .paiement-label { font-size:13px; font-weight:700; color:#1a1a1a; }
+
+    /* Champs carte bancaire */
+    .carte-fields { border:1.5px solid #ece9e4; border-radius:12px; padding:16px; margin-top:12px; background:#fafaf9; display:none; }
+    .carte-fields.show { display:block; }
+    .carte-header { font-size:12px; font-weight:700; color:#555; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+    .card-input { font-family:'Courier New',monospace; letter-spacing:2px; }
+
+    .btn-nav { display:flex; gap:10px; justify-content:space-between; }
+    .btn-next { background:#ff6a00; color:#fff; border:none; padding:12px 28px; border-radius:10px; font-size:14px; font-weight:700; font-family:'Nunito',sans-serif; cursor:pointer; transition:background .15s; }
+    .btn-next:hover { background:#e55f00; }
+    .btn-next:disabled { background:#ccc; cursor:not-allowed; }
+    .btn-back { background:#fff; color:#888; border:1.5px solid #ece9e4; padding:12px 24px; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; }
+    .btn-submit-final { width:100%; background:#ff6a00; border:none; border-radius:12px; padding:15px; color:#fff; font-size:15px; font-weight:800; font-family:'Nunito',sans-serif; cursor:pointer; }
+    .btn-submit-final:hover { background:#e55f00; }
+
+    .recap-row { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #f7f5f2; font-size:13px; }
+    .recap-row:last-child { border-bottom:none; }
+    .recap-label { color:#aaa; }
+    .recap-value { font-weight:600; color:#1a1a1a; text-align:right; }
+
+    @@media (max-width:600px) {
+        .vehicule-grid { grid-template-columns:1fr 1fr; }
+        .row2, .row3 { grid-template-columns:1fr; }
+        .step-nav-label { display:none; }
+    }
+</style>
+}
+
+<div class="page-header">
+    <h1>Nouvelle commande 📦</h1>
+    <p>Suivez les étapes pour passer votre commande</p>
+</div>
+
+<!-- NAVIGATION -->
+<div class="steps-nav">
+    <div class="step-nav-item">
+        <div class="step-nav-num active" id="nav1">1</div>
+        <div class="step-nav-label active" id="navlbl1">Véhicule</div>
+    </div>
+    <div class="step-nav-sep"></div>
+    <div class="step-nav-item">
+        <div class="step-nav-num" id="nav2">2</div>
+        <div class="step-nav-label" id="navlbl2">Adresses</div>
+    </div>
+    <div class="step-nav-sep"></div>
+    <div class="step-nav-item">
+        <div class="step-nav-num" id="nav3">3</div>
+        <div class="step-nav-label" id="navlbl3">Livreur</div>
+    </div>
+    <div class="step-nav-sep"></div>
+    <div class="step-nav-item">
+        <div class="step-nav-num" id="nav4">4</div>
+        <div class="step-nav-label" id="navlbl4">Colis</div>
+    </div>
+    <div class="step-nav-sep"></div>
+    <div class="step-nav-item">
+        <div class="step-nav-num" id="nav5">5</div>
+        <div class="step-nav-label" id="navlbl5">Confirmer</div>
+    </div>
+</div>
+
+<form id="commandeForm" asp-controller="Client" asp-action="SoumettreCommande" method="post">
+    @Html.AntiForgeryToken()
+
+    <!-- Champs cachés coordonnées -->
+    <input type="hidden" name="LatDepart"  id="latDepart" />
+    <input type="hidden" name="LngDepart"  id="lngDepart" />
+    <input type="hidden" name="LatArrivee" id="latArrivee" />
+    <input type="hidden" name="LngArrivee" id="lngArrivee" />
+    <input type="hidden" name="LivreurId"  id="livreurIdInput" value="" />
+    <input type="hidden" name="PrixCalcule" id="prixInput" value="0" />
+
+    <!-- ══ ÉTAPE 1 : VÉHICULE & EXPRESS ══ -->
+    <div id="step1">
+        <div class="form-card">
+            <div class="card-title">🚗 Type de véhicule souhaité</div>
+            <div class="vehicule-grid">
+                <label class="vehicule-opt selected" id="vopt-Moto">
+                    <input type="radio" name="TypeVehicule" value="Moto" checked
+                           onchange="selectVehicule('Moto')"/>
+                    <div class="vehicule-icon">🏍️</div>
+                    <div class="vehicule-label">Moto</div>
+                    <div class="vehicule-tarif">150 FCFA/km</div>
+                </label>
+                <label class="vehicule-opt" id="vopt-Voiture">
+                    <input type="radio" name="TypeVehicule" value="Voiture"
+                           onchange="selectVehicule('Voiture')"/>
+                    <div class="vehicule-icon">🚗</div>
+                    <div class="vehicule-label">Voiture</div>
+                    <div class="vehicule-tarif">350 FCFA/km</div>
+                </label>
+                <label class="vehicule-opt" id="vopt-Camionnette">
+                    <input type="radio" name="TypeVehicule" value="Camionnette"
+                           onchange="selectVehicule('Camionnette')"/>
+                    <div class="vehicule-icon">🚐</div>
+                    <div class="vehicule-label">Camionnette</div>
+                    <div class="vehicule-tarif">500 FCFA/km</div>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <div class="card-title">⚡ Type de livraison</div>
+            <div class="express-grid">
+                <label class="express-opt selected" id="eopt-standard">
+                    <input type="radio" name="EstExpress" value="false" checked
+                           onchange="selectExpress(false)"/>
+                    <div class="express-icon">🕐</div>
+                    <div>
+                        <div class="express-label">Standard</div>
+                        <div class="express-desc">Délai normal · Prix de base</div>
+                    </div>
+                </label>
+                <label class="express-opt" id="eopt-express">
+                    <input type="radio" name="EstExpress" value="true"
+                           onchange="selectExpress(true)"/>
+                    <div class="express-icon">🚀</div>
+                    <div>
+                        <div class="express-label">Express</div>
+                        <div class="express-desc">Priorité absolue · +20%</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="btn-nav">
+            <div></div>
+            <button type="button" class="btn-next" onclick="allerEtape(2)">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ══ ÉTAPE 2 : ADRESSES ══ -->
+    <div id="step2" style="display:none;">
+        <div class="form-card">
+            <div class="card-title">📍 Adresses de livraison</div>
+
+            <!-- CHAMPS TEXTE (principal) -->
+           <div class="field">
+    <label>🟢 Adresse de départ</label>
+    <div style="position:relative;">
+        <input type="text" id="txtDepart" name="AdresseDepart"
+               placeholder="Ex: Cocody Riviera 3, Abidjan"
+               required autocomplete="off"
+               oninput="geocoderAdresse(this.value,'depart')" />
+        <span id="spinDepart" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;">⏳</span>
+        <span id="okDepart"   style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;color:#22c55e;">✅</span>
+        <span id="errDepart"  style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;color:#ef4444;">❌</span>
+    </div>
+    <div id="hintDepart" style="font-size:11px;color:#aaa;margin-top:4px;">
+        💡 Tapez l'adresse OU cliquez sur la carte ci-dessus
+    </div>
+</div>
+
+<div class="field">
+    <label>🔴 Adresse d'arrivée</label>
+    <div style="position:relative;">
+        <input type="text" id="txtArrivee" name="AdresseArrivee"
+               placeholder="Ex: Plateau, Abidjan"
+               required autocomplete="off"
+               oninput="geocoderAdresse(this.value,'arrivee')" />
+        <span id="spinArrivee" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;">⏳</span>
+        <span id="okArrivee"   style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;color:#22c55e;">✅</span>
+        <span id="errArrivee"  style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;color:#ef4444;">❌</span>
+    </div>
+    <div id="hintArrivee" style="font-size:11px;color:#aaa;margin-top:4px;">
+        💡 Tapez l'adresse OU cliquez sur la carte ci-dessus
+    </div>
+</div>
+
+            <div style="display:flex;align-items:center;gap:8px;margin:12px 0;">
+                <div style="flex:1;height:1px;background:#ece9e4;"></div>
+                <span style="font-size:12px;color:#aaa;font-weight:600;">OU cliquez directement sur la carte</span>
+                <div style="flex:1;height:1px;background:#ece9e4;"></div>
+            </div>
+
+            <div class="map-hint">
+                1er clic = 🟢 Départ · 2ème clic = 🔴 Arrivée
+            </div>
+            <div id="map"></div>
+
+            <!-- INDICATEURS COORDONNÉES -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:9px;padding:8px 12px;">
+                    <div style="font-size:10px;color:#16a34a;font-weight:700;margin-bottom:2px;">🟢 DÉPART</div>
+                    <div id="labelDepart" style="font-size:12px;color:#555;">Non défini</div>
+                </div>
+                <div style="background:#fff3ed;border:1px solid #ffd4b8;border-radius:9px;padding:8px 12px;">
+                    <div style="font-size:10px;color:#ff6a00;font-weight:700;margin-bottom:2px;">🔴 ARRIVÉE</div>
+                    <div id="labelArrivee" style="font-size:12px;color:#555;">Non défini</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <div class="card-title">👤 Expéditeur & Destinataire</div>
+            <div class="row2">
+                <div class="field">
+                    <label>Nom expéditeur</label>
+                    <input name="NomExpediteur" placeholder="Ex: Koné" required />
+                </div>
+                <div class="field">
+                    <label>Téléphone expéditeur</label>
+                    <input name="TelExpediteur" type="tel" placeholder="+225 07 00 00 00" required />
+                </div>
+            </div>
+            <div class="row2">
+                <div class="field">
+                    <label>Nom destinataire</label>
+                    <input name="NomDestinataire" placeholder="Ex: Diallo" required />
+                </div>
+                <div class="field">
+                    <label>Téléphone destinataire</label>
+                    <input name="TelDestinataire" type="tel" placeholder="+225 05 00 00 00" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-nav">
+            <button type="button" class="btn-back" onclick="allerEtape(1)">← Retour</button>
+            <button type="button" class="btn-next" id="btnEtape3" onclick="allerEtape(3)" disabled>
+                Suivant →
+            </button>
+        </div>
+    </div>
+
+    <!-- ══ ÉTAPE 3 : LIVREUR ══ -->
+    <div id="step3" style="display:none;">
+        <div class="form-card">
+            <div class="card-title">🚴 Livreurs disponibles — <span id="vehiculeLabel" style="color:#ff6a00;">Moto</span></div>
+
+            <div id="livreurList" class="livreur-list">
+                <!-- Chargé par JS -->
+            </div>
+        </div>
+
+        <div class="btn-nav">
+            <button type="button" class="btn-back" onclick="allerEtape(2)">← Retour</button>
+            <button type="button" class="btn-next" onclick="allerEtape(4)">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ══ ÉTAPE 4 : COLIS ══ -->
+    <div id="step4" style="display:none;">
+        <div class="form-card">
+            <div class="card-title">📦 Informations sur le colis (optionnel)</div>
+            <div class="field">
+                <label>Description du colis</label>
+                <textarea name="InfosColis" rows="2"
+                          placeholder="Ex: documents importants, vêtements, électronique..."></textarea>
+            </div>
+            <div class="row2">
+                <div class="field">
+                    <label>Poids estimé (kg)</label>
+                    <input name="PoidsColis" type="number" step="0.1" min="0" placeholder="Ex: 2.5" />
+                </div>
+                <div class="field" style="display:flex;align-items:center;gap:10px;padding-top:22px;">
+                    <input type="checkbox" name="Fragile" id="fragile" value="true"
+                           style="width:18px;height:18px;cursor:pointer;accent-color:#ff6a00;" />
+                    <label for="fragile" style="text-transform:none;font-size:14px;color:#555;font-weight:600;margin:0;cursor:pointer;">
+                        ⚠️ Colis fragile
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-nav">
+            <button type="button" class="btn-back" onclick="allerEtape(3)">← Retour</button>
+            <button type="button" class="btn-next" onclick="allerEtape(5)">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ══ ÉTAPE 5 : CONFIRMATION & PAIEMENT ══ -->
+    <div id="step5" style="display:none;">
+
+        <!-- PRIX -->
+        <div class="form-card">
+            <div class="card-title">💰 Prix estimé</div>
+            <div class="prix-box">
+                <div>
+                    <div style="font-size:13px;color:#888;">Total à payer</div>
+                    <div class="prix-value" id="prixValue">Calcul en cours...</div>
+                    <div class="prix-tags" id="prixTags"></div>
+                </div>
+                <div style="font-size:36px;">💳</div>
+            </div>
+        </div>
+
+        <!-- PAIEMENT -->
+        <div class="form-card">
+            <div class="card-title">💳 Mode de paiement</div>
+
+            <div class="paiement-grid">
+                <label class="paiement-opt selected" id="popt-cash">
+                    <input type="radio" name="ModePaiement" value="Cash" checked
+                           onchange="selectPaiement('Cash')"/>
+                    <div class="paiement-icon">💵</div>
+                    <div class="paiement-label">Cash à la livraison</div>
+                </label>
+                <label class="paiement-opt" id="popt-carte">
+                    <input type="radio" name="ModePaiement" value="Carte"
+                           onchange="selectPaiement('Carte')"/>
+                    <div class="paiement-icon">💳</div>
+                    <div class="paiement-label">Carte bancaire</div>
+                </label>
+            </div>
+
+            <!-- CHAMPS CARTE (visibles uniquement si Carte sélectionnée) -->
+            <div class="carte-fields" id="carteFields">
+                <div class="carte-header">
+                    🔒 Vos informations bancaires (sécurisées)
+                </div>
+                <div class="field">
+                    <label>Nom sur la carte</label>
+                    <input type="text" id="carteNom" placeholder="Ex: AMARA KONE" />
+                </div>
+                <div class="field">
+                    <label>Numéro de carte</label>
+                    <input type="text" id="carteNumero" class="card-input"
+                           placeholder="1234 5678 9012 3456" maxlength="19"
+                           oninput="formaterCarte(this)" />
+                </div>
+                <div class="row2">
+                    <div class="field">
+                        <label>Date d'expiration</label>
+                        <input type="text" id="carteExpiry" placeholder="MM/AA" maxlength="5"
+                               oninput="formaterExpiry(this)" />
+                    </div>
+                    <div class="field">
+                        <label>CVV</label>
+                        <input type="password" id="carteCvv" placeholder="•••" maxlength="3" />
+                    </div>
+                </div>
+                <div style="font-size:11px;color:#aaa;display:flex;align-items:center;gap:6px;margin-top:4px;">
+                    🔒 Vos données sont chiffrées et sécurisées
+                </div>
+            </div>
+        </div>
+
+        <!-- RÉCAPITULATIF -->
+        <div class="form-card" style="background:#f8f7ff;">
+            <div class="card-title">📋 Récapitulatif</div>
+            <div class="recap-row">
+                <span class="recap-label">🟢 Départ</span>
+                <span class="recap-value" id="recapDepart" style="max-width:220px;font-size:12px;"></span>
+            </div>
+            <div class="recap-row">
+                <span class="recap-label">🔴 Arrivée</span>
+                <span class="recap-value" id="recapArrivee" style="max-width:220px;font-size:12px;"></span>
+            </div>
+            <div class="recap-row">
+                <span class="recap-label">Véhicule</span>
+                <span class="recap-value" id="recapVehicule"></span>
+            </div>
+            <div class="recap-row">
+                <span class="recap-label">Type</span>
+                <span class="recap-value" id="recapExpress"></span>
+            </div>
+            <div class="recap-row">
+                <span class="recap-label">Livreur</span>
+                <span class="recap-value" id="recapLivreur"></span>
+            </div>
+        </div>
+
+        <div class="btn-nav">
+            <button type="button" class="btn-back" onclick="allerEtape(4)">← Retour</button>
+            <button type="submit" class="btn-next" id="btnConfirmer">
+                ✅ Confirmer la commande
+            </button>
+        </div>
+        <p style="font-size:11px;color:#ccc;text-align:center;margin-top:10px;">
+            Un livreur recevra votre demande et devra l'accepter manuellement
+        </p>
+    </div>
+
+</form>
+
+@section Scripts {
+<script>
+    // ══ VARIABLES GLOBALES ══
+    let typeVehicule = 'Moto';
+    let estExpress   = false;
+    let departSet    = false;
+    let arriveeSet   = false;
+    let stepActuel   = 1;
+    let livreurSelectionne = { id: '', nom: 'Auto-assigné' };
+    let geocodeTimerDepart  = null;
+    let geocodeTimerArrivee = null;
+    let markerDepart  = null;
+    let markerArrivee = null;
+    let mapClickStep  = 0;
+
+    const tousLivreurs = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        (ViewData["Livreurs"] as List<DeliveryWeb.Models.Livreur> ?? new())
+            .Select(l => new {
+                id       = l.Id,
+                nom      = l.Prenom + " " + l.Nom,
+                vehicule = l.TypeVehicule.ToString()
+            })
+    ));
+
+    // ══ NAVIGATION ÉTAPES ══
+    function allerEtape(num) {
+        // Validation étape 2 → 3
+        if (num === 3 && stepActuel === 2) {
+            if (!departSet || !arriveeSet) {
+                showErreur('Veuillez définir les deux adresses avant de continuer.');
+                return;
+            }
+        }
+
+        document.getElementById('step' + stepActuel).style.display = 'none';
+        document.getElementById('step' + num).style.display = 'block';
+
+        for (let i = 1; i <= 5; i++) {
+            const nav    = document.getElementById('nav' + i);
+            const navlbl = document.getElementById('navlbl' + i);
+            if (i < num) {
+                nav.className = 'step-nav-num done';
+                nav.textContent = '✓';
+                navlbl.className = 'step-nav-label';
+            } else if (i === num) {
+                nav.className = 'step-nav-num active';
+                nav.textContent = i;
+                navlbl.className = 'step-nav-label active';
+            } else {
+                nav.className = 'step-nav-num';
+                nav.textContent = i;
+                navlbl.className = 'step-nav-label';
+            }
+        }
+
+        stepActuel = num;
+        if (num === 3) chargerLivreurs();
+        if (num === 5) { remplirRecap(); calculerPrix(); }
+    }
+
+    // ══ VÉHICULE ══
+    function selectVehicule(type) {
+        document.querySelectorAll('.vehicule-opt').forEach(el => el.classList.remove('selected'));
+        document.getElementById('vopt-' + type).classList.add('selected');
+        typeVehicule = type;
+    }
+
+    // ══ EXPRESS ══
+    function selectExpress(val) {
+        document.querySelectorAll('.express-opt').forEach(el => el.classList.remove('selected'));
+        document.getElementById(val ? 'eopt-express' : 'eopt-standard').classList.add('selected');
+        estExpress = val;
+        // ✅ Mettre à jour le champ caché EstExpress
+        document.querySelectorAll('input[name="EstExpress"]').forEach(r => {
+            r.checked = (r.value === val.toString());
+        });
+    }
+
+    // ══ CARTE LEAFLET ══
+    const map = L.map('map').setView([5.3599, -4.0083], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    const iconDepart = L.divIcon({
+        html: '<div style="background:#22c55e;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)"></div>',
+        iconSize: [20,20], className: ''
+    });
+    const iconArrivee = L.divIcon({
+        html: '<div style="background:#ff6a00;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)"></div>',
+        iconSize: [20,20], className: ''
+    });
+
+    map.on('click', async function(e) {
+        const { lat, lng } = e.latlng;
+        const adresse = await reverseGeocode(lat, lng);
+        if (mapClickStep === 0) {
+            setDepart(lat, lng, adresse);
+            mapClickStep = 1;
+        } else {
+            setArrivee(lat, lng, adresse);
+            mapClickStep = 0;
+        }
+    });
+
+    function setDepart(lat, lng, adresse) {
+        if (markerDepart) map.removeLayer(markerDepart);
+        markerDepart = L.marker([lat, lng], { icon: iconDepart }).addTo(map);
+        document.getElementById('latDepart').value  = lat;
+        document.getElementById('lngDepart').value  = lng;
+        document.getElementById('txtDepart').value  = adresse;
+        document.getElementById('labelDepart').textContent = adresse;
+        departSet = true;
+        verifierAdresses();
+    }
+
+    function setArrivee(lat, lng, adresse) {
+        if (markerArrivee) map.removeLayer(markerArrivee);
+        markerArrivee = L.marker([lat, lng], { icon: iconArrivee }).addTo(map);
+        document.getElementById('latArrivee').value = lat;
+        document.getElementById('lngArrivee').value = lng;
+        document.getElementById('txtArrivee').value = adresse;
+        document.getElementById('labelArrivee').textContent = adresse;
+        arriveeSet = true;
+        verifierAdresses();
+        if (departSet) {
+            const lat1 = parseFloat(document.getElementById('latDepart').value);
+            const lng1 = parseFloat(document.getElementById('lngDepart').value);
+            map.fitBounds([[lat1, lng1], [lat, lng]], { padding: [40,40] });
+        }
+    }
+
+    function verifierAdresses() {
+        const btn = document.getElementById('btnEtape3');
+        if (btn) btn.disabled = !(departSet && arriveeSet);
+    }
+
+    async function reverseGeocode(lat, lng) {
+        try {
+            const resp = await fetch(`/Client/ReverseGeocode?lat=${lat}&lon=${lng}`);
+            const data = await resp.json();
+            return data.found ? data.adresse : `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        } catch {
+            return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        }
+    }
+
+    // ══ GEOCODAGE TEXTE ══
+    function geocoderAdresse(texte, type) {
+        const timer = type === 'depart' ? geocodeTimerDepart : geocodeTimerArrivee;
+        clearTimeout(timer);
+        if (texte.length < 3) return;
+
+        afficherIndicateur(type, 'spin');
+
+        const newTimer = setTimeout(async () => {
+            try {
+                const resp = await fetch(`/Client/Geocoder?adresse=${encodeURIComponent(texte)}`);
+                const data = await resp.json();
+                if (data.found) {
+                    const lat = parseFloat(data.lat);
+                    const lng = parseFloat(data.lon);
+                    if (type === 'depart') {
+                        setDepart(lat, lng, texte);
+                        afficherIndicateur('depart', 'ok');
+                        map.setView([lat, lng], 14);
+                    } else {
+                        setArrivee(lat, lng, texte);
+                        afficherIndicateur('arrivee', 'ok');
+                    }
+                } else {
+                    afficherIndicateur(type, 'err');
+                }
+            } catch {
+                afficherIndicateur(type, 'err');
+            }
+        }, 600);
+
+        if (type === 'depart') geocodeTimerDepart  = newTimer;
+        else                   geocodeTimerArrivee = newTimer;
+    }
+
+    function afficherIndicateur(type, etat) {
+        const p = type === 'depart' ? 'Depart' : 'Arrivee';
+        document.getElementById('spin' + p).style.display = etat === 'spin' ? 'block' : 'none';
+        document.getElementById('ok'   + p).style.display = etat === 'ok'   ? 'block' : 'none';
+        document.getElementById('err'  + p).style.display = etat === 'err'  ? 'block' : 'none';
+    }
+
+    // ══ LIVREURS ══
+    function chargerLivreurs() {
+        document.getElementById('vehiculeLabel').textContent = typeVehicule;
+        const filtres = tousLivreurs.filter(l => l.vehicule === typeVehicule);
+
+        let html = `
+            <div class="livreur-item selected" id="livreur-auto"
+                 onclick="selectLivreur('','Auto-assigné',this)">
+                <div class="livreur-avatar" style="background:#888;font-size:16px;">🤖</div>
+                <div>
+                    <div class="livreur-name">Auto-assigné</div>
+                    <div class="livreur-meta">Le système choisit automatiquement</div>
+                </div>
+            </div>`;
+
+        if (filtres.length === 0) {
+            html += `<div class="no-livreur">Aucun livreur ${typeVehicule} disponible</div>`;
+        } else {
+            filtres.forEach(l => {
+                const init = l.nom.split(' ').map(n => n[0] || '').join('').toUpperCase();
+                html += `
+                    <div class="livreur-item" id="livreur-${l.id}"
+                         onclick="selectLivreur('${l.id}','${l.nom}',this)">
+                        <div class="livreur-avatar">${init}</div>
+                        <div>
+                            <div class="livreur-name">${l.nom}</div>
+                            <div class="livreur-meta">${typeVehicule}</div>
+                        </div>
+                        <div class="livreur-note">⭐ Nouveau</div>
+                    </div>`;
+            });
+        }
+        document.getElementById('livreurList').innerHTML = html;
+        livreurSelectionne = { id: '', nom: 'Auto-assigné' };
+    }
+
+    function selectLivreur(id, nom, el) {
+        document.querySelectorAll('.livreur-item').forEach(e => e.classList.remove('selected'));
+        el.classList.add('selected');
+        livreurSelectionne = { id, nom };
+        document.getElementById('livreurIdInput').value = id;
+    }
+
+    // ══ CALCUL PRIX ══
+   async function calculerPrix() {
+    const lat1 = document.getElementById('latDepart').value;
+    const lng1 = document.getElementById('lngDepart').value;
+    const lat2 = document.getElementById('latArrivee').value;
+    const lng2 = document.getElementById('lngArrivee').value;
+
+    if (!lat1 || !lat2 || parseFloat(lat1) === 0 || parseFloat(lat2) === 0) {
+        document.getElementById('prixValue').textContent = '-- FCFA';
+        return;
+    }
+
+    document.getElementById('prixValue').innerHTML =
+        '<span style="font-size:16px;color:#aaa;">⏳ Calcul...</span>';
+    document.getElementById('prixTags').innerHTML = '';
+    document.getElementById('prixInput').value = '0';
+
+    try {
+        const resp = await fetch('/Client/CalculerPrix', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                latDepart:    parseFloat(lat1),
+                lngDepart:    parseFloat(lng1),
+                latArrivee:   parseFloat(lat2),
+                lngArrivee:   parseFloat(lng2),
+                typeVehicule: typeVehicule,
+                estExpress:   estExpress === true || estExpress === 'true'
+            })
+        });
+
+        if (!resp.ok) throw new Error(`Réponse HTTP ${resp.status}`);
+
+        const data = await resp.json();
+
+        if (!data.succes) {
+            console.error('Erreur calcul prix (serveur):', data.erreur);
+            document.getElementById('prixValue').textContent = 'Calcul indisponible';
+            // Laisser prixInput à "0" → le serveur recalculera à la soumission
+            return;
+        }
+
+        const prixNum = parseInt(data.prix);
+        document.getElementById('prixValue').textContent =
+            prixNum.toLocaleString('fr-FR') + ' FCFA';
+        document.getElementById('prixInput').value = data.prix;
+
+        let tags = '';
+        if (estExpress === true || estExpress === 'true')
+            tags += '<span class="prix-tag">🚀 Express +20%</span>';
+        const h = new Date().getHours();
+        if (h < 7 || h >= 20) tags += '<span class="prix-tag">🌙 Nuit +10%</span>';
+        document.getElementById('prixTags').innerHTML = tags;
+
+    } catch (err) {
+        console.error('Erreur calculerPrix:', err);
+        document.getElementById('prixValue').textContent = 'Calcul indisponible';
+    }
+}
+
+    // ══ RÉCAP ══
+   // ══ RÉCAP + DEBUG COORDONNÉES ══
+function remplirRecap() {
+    const lat1 = document.getElementById('latDepart').value;
+    const lng1 = document.getElementById('lngDepart').value;
+    const lat2 = document.getElementById('latArrivee').value;
+    const lng2 = document.getElementById('lngArrivee').value;
+
+    // Debug visible dans la console
+    console.log('Coordonnées au moment du récap:');
+    console.log('Départ:', lat1, lng1);
+    console.log('Arrivée:', lat2, lng2);
+
+    document.getElementById('recapDepart').textContent   = document.getElementById('txtDepart').value  || 'Non défini';
+    document.getElementById('recapArrivee').textContent  = document.getElementById('txtArrivee').value || 'Non défini';
+    document.getElementById('recapVehicule').textContent = typeVehicule;
+    document.getElementById('recapExpress').textContent  = estExpress ? '🚀 Express (+20%)' : '🕐 Standard';
+    document.getElementById('recapLivreur').textContent  = livreurSelectionne.nom;
+}
+
+
+    // ══ PAIEMENT ══
+    function selectPaiement(mode) {
+        document.getElementById('popt-cash').classList.toggle('selected',  mode === 'Cash');
+        document.getElementById('popt-carte').classList.toggle('selected', mode === 'Carte');
+        const carteFields = document.getElementById('carteFields');
+        if (carteFields) {
+            carteFields.classList.toggle('show', mode === 'Carte');
+        }
+    }
+
+    // ══ FORMATAGE CARTE ══
+    function formaterCarte(input) {
+        let val = input.value.replace(/\D/g, '').substring(0, 16);
+        input.value = val.replace(/(.{4})/g, '$1 ').trim();
+    }
+    function formaterExpiry(input) {
+        let val = input.value.replace(/\D/g, '').substring(0, 4);
+        if (val.length >= 3) val = val.substring(0,2) + '/' + val.substring(2);
+        input.value = val;
+    }
+
+   // Remplacer les DEUX listeners par un seul :
+   document.getElementById('commandeForm').addEventListener('submit', function(e) {
+    const txtDep = document.getElementById('txtDepart').value;
+    const txtArr = document.getElementById('txtArrivee').value;
+
+    // 1. Vérifier que les adresses sont renseignées
+    if (!txtDep || !txtArr) {
+        e.preventDefault();
+        showErreur('⚠️ Veuillez renseigner les adresses de départ et d\'arrivée.');
+        allerEtape(2);
+        return false;
+    }
+
+    // 2. Coordonnées de secours si géocodage incomplet
+    const lat1 = document.getElementById('latDepart').value;
+    const lat2 = document.getElementById('latArrivee').value;
+
+    if (!lat1 || parseFloat(lat1) === 0) {
+        document.getElementById('latDepart').value = '5.3544';
+        document.getElementById('lngDepart').value = '-4.0083';
+        console.warn('Départ: coordonnées par défaut Abidjan');
+    }
+    if (!lat2 || parseFloat(lat2) === 0) {
+        document.getElementById('latArrivee').value = '5.3100';
+        document.getElementById('lngArrivee').value = '-4.0200';
+        console.warn('Arrivée: coordonnées par défaut Abidjan');
+    }
+
+    // 3. Forcer le recalcul du prix avec les coords finales avant soumission
+    const finalLat1 = parseFloat(document.getElementById('latDepart').value);
+    const finalLng1 = parseFloat(document.getElementById('lngDepart').value);
+    const finalLat2 = parseFloat(document.getElementById('latArrivee').value);
+    const finalLng2 = parseFloat(document.getElementById('lngArrivee').value);
+    console.log('Submit final - Coords:', finalLat1, finalLng1, finalLat2, finalLng2);
+});
+
+
+    function showErreur(msg) {
+        const ancien = document.getElementById('erreurFlottant');
+        if (ancien) ancien.remove();
+        const div = document.createElement('div');
+        div.id = 'erreurFlottant';
+        div.style.cssText = `
+            background:#fef2f2; border:1px solid #fca5a5; border-radius:12px;
+            padding:14px 18px; font-size:14px; color:#dc2626;
+            position:fixed; top:20px; right:20px; z-index:9999;
+            box-shadow:0 8px 24px rgba(0,0,0,.15); max-width:380px;
+        `;
+        div.textContent = msg;
+        document.body.appendChild(div);
+        setTimeout(() => div.remove(), 5000);
+    }
+</script>
+}

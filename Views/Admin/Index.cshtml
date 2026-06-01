@@ -1,0 +1,292 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var commandes = ViewData["CommandesRecentes"] as List<DeliveryWeb.Models.Commande> ?? new();
+    var revenusMois = (decimal)(ViewData["RevenusMois"] ?? 0m);
+}
+
+@section Styles {
+    <style>
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+            .page-header h1 {
+                font-family: 'Nunito', sans-serif;
+                font-size: 26px;
+                font-weight: 800;
+                color: #1a1a1a;
+            }
+
+            .page-header p {
+                font-size: 14px;
+                color: #aaa;
+                margin-top: 4px;
+            }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 14px;
+            padding: 20px 22px;
+        }
+
+            .stat-card.orange {
+                border-top: 4px solid #ff6a00;
+            }
+
+        .stat-label {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Nunito', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a1a1a;
+        }
+
+        .stat-card.orange .stat-value {
+            color: #ff6a00;
+        }
+
+        .stat-sub {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 4px;
+        }
+
+        .alert-card {
+            background: #fff3ed;
+            border: 1px solid #ffd4b8;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .alert-text {
+            font-size: 13px;
+            color: #888;
+        }
+
+            .alert-text strong {
+                color: #ff6a00;
+            }
+
+        .btn-sm {
+            background: #ff6a00;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .section-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 14px;
+        }
+
+        .table-card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f7f5f2;
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            color: #aaa;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 13px;
+            color: #555;
+            border-top: 1px solid #f0ede8;
+        }
+
+        tr:hover td {
+            background: #fafaf9;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .statut-EnAttente {
+            background: #fff8e1;
+            color: #f59e0b;
+        }
+
+        .statut-Acceptee {
+            background: #e8f5e9;
+            color: #22c55e;
+        }
+
+        .statut-EnCours {
+            background: #fff3ed;
+            color: #ff6a00;
+        }
+
+        .statut-Livree {
+            background: #e8f5e9;
+            color: #16a34a;
+        }
+
+        .statut-Annulee {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .prix {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            color: #ff6a00;
+        }
+
+        @@media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @@media (max-width: 500px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+}
+
+<div class="page-header">
+    <h1>Tableau de bord</h1>
+    <p>@DateTime.Now.ToString("dddd dd MMMM yyyy", new System.Globalization.CultureInfo("fr-FR"))</p>
+</div>
+
+<!-- STATS -->
+<div class="stats-grid">
+    <div class="stat-card orange">
+        <div class="stat-label">Commandes aujourd'hui</div>
+        <div class="stat-value">@ViewData["TotalAujourdhui"]</div>
+        <div class="stat-sub">Toutes statuts confondus</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Revenus du mois</div>
+        <div class="stat-value">@revenusMois.ToString("N0")</div>
+        <div class="stat-sub">FCFA — livraisons effectuées</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Livreurs actifs</div>
+        <div class="stat-value">@ViewData["LivreursActifs"]</div>
+        <div class="stat-sub">Comptes approuvés</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Commandes annulées</div>
+        <div class="stat-value">@ViewData["CommandesAnnulees"]</div>
+        <div class="stat-sub">Depuis le début</div>
+    </div>
+</div>
+
+<!-- ALERTE LIVREURS EN ATTENTE -->
+@if ((int)(ViewData["LivreursAttente"] ?? 0) > 0)
+{
+    <div class="alert-card">
+        <div class="alert-text">
+            <strong>@ViewData["LivreursAttente"] livreur(s)</strong> en attente d'approbation
+        </div>
+        <a href="/Admin/Livreurs?statut=EnAttente" class="btn-sm">Examiner →</a>
+    </div>
+}
+
+<!-- COMMANDES RÉCENTES -->
+<div class="section-title">Commandes récentes</div>
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Client</th>
+                <th>Destination</th>
+                <th>Livreur</th>
+                <th>Prix</th>
+                <th>Statut</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!commandes.Any())
+            {
+                <tr><td colspan="7" style="text-align:center;color:#ccc;padding:32px;">Aucune commande</td></tr>
+            }
+            else
+            {
+                @foreach (var cmd in commandes)
+                {
+                    <tr>
+                        <td style="font-weight:600;color:#1a1a1a;">#@cmd.Id</td>
+                        <td>@(cmd.Client != null ? $"{cmd.Client.Prenom} {cmd.Client.Nom}" : "—")</td>
+                        <td>@cmd.AdresseArrivee.Split(',')[0]</td>
+                        <td>
+                            @if (cmd.Livreur != null)
+                            {
+                                <span>@cmd.Livreur.Prenom @cmd.Livreur.Nom</span>
+                            }
+                            else
+                            {
+                                <span style="color:#ccc;">Non assigné</span>
+                            }
+                        </td>
+                        <td class="prix">@cmd.PrixCalcule.ToString("N0")</td>
+                        <td><span class="badge statut-@cmd.Statut.ToString()">@cmd.Statut</span></td>
+                        <td>@cmd.DateHeure.ToString("dd/MM HH:mm")</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

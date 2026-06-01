@@ -1,0 +1,481 @@
+﻿@model DeliveryWeb.ViewModels.LoginViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Connexion";
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PickMe — Connexion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans',sans-serif;
+            background: #f7f5f2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid #ece9e4;
+            padding: 14px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: #ff6a00;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .logo-icon svg {
+                width: 20px;
+                height: 20px;
+                fill: #fff;
+            }
+
+        .logo-name {
+            font-family: 'Nunito',sans-serif;
+            font-size: 18px;
+            font-weight: 900;
+            color: #1a1a1a;
+        }
+
+            .logo-name span {
+                color: #ff6a00;
+            }
+
+        .nav-link {
+            font-size: 14px;
+            color: #888;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 18px;
+            border: 1.5px solid #ece9e4;
+            border-radius: 9px;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .hero {
+            flex: 1;
+            padding: 60px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff3ed;
+            border: 1px solid #ffd4b8;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            color: #ff6a00;
+            font-weight: 600;
+            margin-bottom: 24px;
+            width: fit-content;
+        }
+
+        .eyebrow-dot {
+            width: 7px;
+            height: 7px;
+            background: #ff6a00;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1)
+            }
+
+            50% {
+                opacity: .5;
+                transform: scale(.8)
+            }
+        }
+
+        h1 {
+            font-family: 'Nunito',sans-serif;
+            font-size: 38px;
+            font-weight: 900;
+            color: #1a1a1a;
+            line-height: 1.15;
+            letter-spacing: -.5px;
+            margin-bottom: 16px;
+        }
+
+            h1 em {
+                color: #ff6a00;
+                font-style: normal;
+            }
+
+        .subtitle {
+            font-size: 15px;
+            color: #888;
+            line-height: 1.7;
+            margin-bottom: 28px;
+            max-width: 380px;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-side {
+            background: #fff;
+            width: 420px;
+            border-left: 1px solid #ece9e4;
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-title {
+            font-family: 'Nunito',sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .form-subtitle {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 28px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f7f5f2;
+            border-radius: 11px;
+            padding: 4px;
+            gap: 4px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #aaa;
+            text-decoration: none;
+            display: block;
+        }
+
+            .tab.active {
+                background: #fff;
+                color: #ff6a00;
+                box-shadow: 0 1px 6px rgba(0,0,0,.08);
+            }
+
+        /* TOGGLE EMAIL/TÉLÉPHONE */
+        .login-toggle {
+            display: flex;
+            background: #f7f5f2;
+            border-radius: 10px;
+            padding: 3px;
+            gap: 3px;
+            margin-bottom: 18px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            text-align: center;
+            padding: 9px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #aaa;
+            font-family: 'Plus Jakarta Sans',sans-serif;
+            transition: all .15s;
+        }
+
+            .toggle-btn.active {
+                background: #ff6a00;
+                color: #fff;
+            }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+            .field label {
+                display: block;
+                font-size: 11px;
+                color: #aaa;
+                font-weight: 600;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+                letter-spacing: .5px;
+            }
+
+            .field input {
+                width: 100%;
+                background: #fafaf9;
+                border: 1.5px solid #ece9e4;
+                border-radius: 10px;
+                padding: 12px 14px;
+                color: #1a1a1a;
+                font-size: 14px;
+                font-family: 'Plus Jakarta Sans',sans-serif;
+                transition: border .15s;
+            }
+
+                .field input:focus {
+                    outline: none;
+                    border-color: #ff6a00;
+                    background: #fff;
+                }
+
+                .field input::placeholder {
+                    color: #ccc;
+                }
+
+        .forgot {
+            text-align: right;
+            margin-bottom: 16px;
+        }
+
+            .forgot a {
+                font-size: 12px;
+                color: #ff6a00;
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+        .btn-main {
+            width: 100%;
+            background: #ff6a00;
+            border: none;
+            border-radius: 11px;
+            padding: 14px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 800;
+            font-family: 'Nunito',sans-serif;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+            .btn-main:hover {
+                background: #e55f00;
+            }
+
+        .error-box {
+            background: #fff5f5;
+            border: 1px solid #fcc;
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: #c0392b;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .small-note {
+            font-size: 11px;
+            color: #ccc;
+            text-align: center;
+            margin-top: 16px;
+            line-height: 1.6;
+        }
+
+            .small-note a {
+                color: #ff6a00;
+                text-decoration: none;
+            }
+
+        .livreur-link {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #ece9e4;
+            text-align: center;
+        }
+
+            .livreur-link a {
+                font-size: 12px;
+                color: #aaa;
+                text-decoration: none;
+            }
+
+                .livreur-link a span {
+                    color: #ff6a00;
+                    font-weight: 600;
+                }
+
+        @@media (max-width:768px) {
+            .navbar {
+                padding: 12px 20px;
+            }
+
+            .main {
+                flex-direction: column;
+            }
+
+            .hero {
+                padding: 32px 24px 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .form-side {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid #ece9e4;
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a class="logo" href="/">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" /></svg>
+            </div>
+            <span class="logo-name">Pick<span>Me</span></span>
+        </a>
+        <a class="nav-link" href="/Account/Register">S'inscrire</a>
+    </nav>
+
+    <div class="main">
+        <div class="hero">
+            <div class="eyebrow"><span class="eyebrow-dot"></span> Disponible 7j/7</div>
+            <h1>Votre colis livré<br><em>où vous voulez</em></h1>
+            <p class="subtitle">Commandez en quelques secondes, suivez votre livraison en temps réel.</p>
+            <div class="badges">
+                <div class="badge">📍 Suivi GPS en direct</div>
+                <div class="badge">⚡ Prix instantané</div>
+                <div class="badge">🔒 Paiement sécurisé</div>
+                <div class="badge">⭐ Noté 4.8/5</div>
+            </div>
+        </div>
+
+        <div class="form-side">
+            <div class="form-title">Bon retour 👋</div>
+            <div class="form-subtitle">Connectez-vous à votre compte</div>
+
+            <div class="tabs">
+                <a class="tab active" href="/Account/Login">Connexion</a>
+                <a class="tab" href="/Account/Register">Inscription</a>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="error-box">@Html.ValidationSummary(true)</div>
+            }
+
+            <form asp-action="Login" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="TypeLogin" id="typeLoginInput" value="telephone" />
+
+                <!-- TOGGLE EMAIL / TÉLÉPHONE -->
+                <div class="login-toggle">
+                    <button type="button" class="toggle-btn active" id="btnTel"
+                            onclick="switchLogin('telephone')">
+                        📞 Téléphone
+                    </button>
+                    <button type="button" class="toggle-btn" id="btnEmail"
+                            onclick="switchLogin('email')">
+                        📧 Email
+                    </button>
+                </div>
+
+                <div class="field">
+                    <label id="loginLabel">Numéro de téléphone</label>
+                    <input asp-for="Identifiant"
+                           type="text"
+                           id="loginInput"
+                           placeholder="+225 07 00 00 00 00" />
+                    <span asp-validation-for="Identifiant" class="error-msg"></span>
+                </div>
+
+                <div class="field">
+                    <label>Mot de passe</label>
+                    <input asp-for="MotDePasse" type="password" placeholder="••••••••" />
+                    <span asp-validation-for="MotDePasse" class="error-msg"></span>
+                </div>
+
+                <div class="forgot"><a href="#">Mot de passe oublié ?</a></div>
+                <button type="submit" class="btn-main">Se connecter →</button>
+            </form>
+
+            <p class="small-note">En vous connectant, vous acceptez nos <a href="#">CGU</a></p>
+
+            <div class="livreur-link">
+                <a href="/Livreur/Register">Vous êtes livreur ? <span>Rejoindre le réseau</span></a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchLogin(type) {
+            const isTel = type === 'telephone';
+            document.getElementById('typeLoginInput').value = type;
+            document.getElementById('btnTel').classList.toggle('active', isTel);
+            document.getElementById('btnEmail').classList.toggle('active', !isTel);
+            document.getElementById('loginLabel').textContent = isTel ? 'Numéro de téléphone' : 'Adresse email';
+            const input = document.getElementById('loginInput');
+            input.type        = isTel ? 'tel' : 'email';
+            input.placeholder = isTel ? '+225 07 00 00 00 00' : 'vous@email.com';
+            input.value       = '';
+        }
+    </script>
+</body>
+</html>

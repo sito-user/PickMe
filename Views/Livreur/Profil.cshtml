@@ -1,0 +1,304 @@
+﻿@model DeliveryWeb.Models.Livreur
+@{
+    Layout = "~/Views/Shared/_LayoutLivreur.cshtml";
+    ViewData["Title"] = "Mon profil";
+    ViewData["Page"] = "profil";
+
+    var nbTotal = (int)(ViewData["NbTotal"] ?? 0);
+    var nbLivrees = (int)(ViewData["NbLivrees"] ?? 0);
+    var revenus = (decimal)(ViewData["Revenus"] ?? 0m);
+}
+
+@section Styles {
+    <style>
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+            .page-header h1 {
+                font-family: 'Nunito',sans-serif;
+                font-size: 24px;
+                font-weight: 800;
+                color: #1a1a1a;
+            }
+
+            .page-header p {
+                font-size: 14px;
+                color: #aaa;
+                margin-top: 4px;
+            }
+
+        .profil-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-family: 'Nunito',sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 18px;
+        }
+
+        .avatar-section {
+            text-align: center;
+            padding: 8px 0 20px;
+            border-bottom: 1px solid #f7f5f2;
+            margin-bottom: 20px;
+        }
+
+        .avatar-big {
+            width: 80px;
+            height: 80px;
+            background: #ff6a00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            margin: 0 auto 12px;
+        }
+
+        .profil-name {
+            font-family: 'Nunito',sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: #1a1a1a;
+        }
+
+        .profil-role {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 3px;
+        }
+
+        .badge-statut {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .statut-Approuve {
+            background: #e8f5e9;
+            color: #16a34a;
+        }
+
+        .statut-EnAttente {
+            background: #fff8e1;
+            color: #f59e0b;
+        }
+
+        .statut-Suspendu {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .statut-Bloque {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f7f5f2;
+            font-size: 13px;
+        }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+        .info-label {
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .vehicule-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #fff3ed;
+            border: 1px solid #ffd4b8;
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .vehicule-icon-big {
+            font-size: 32px;
+        }
+
+        .vehicule-name {
+            font-family: 'Nunito',sans-serif;
+            font-size: 17px;
+            font-weight: 800;
+            color: #ff6a00;
+        }
+
+        .vehicule-tarif {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 2px;
+        }
+
+        .stat-mini {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 10px;
+        }
+
+        .stat-mini-item {
+            background: #f7f5f2;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .stat-mini-val {
+            font-family: 'Nunito',sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            color: #ff6a00;
+        }
+
+        .stat-mini-lbl {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 3px;
+        }
+
+        @@media (max-width:768px) {
+            .profil-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-mini {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+}
+
+<div class="page-header">
+    <h1>Mon profil 🚴</h1>
+    <p>Vos informations de livreur</p>
+</div>
+
+<div class="profil-grid">
+
+    <!-- GAUCHE -->
+    <div>
+        <div class="card">
+            <div class="avatar-section">
+                <div class="avatar-big">
+                    @Model.Prenom.Substring(0, 1).ToUpper()@Model.Nom.Substring(0, 1).ToUpper()
+                </div>
+                <div class="profil-name">@Model.Prenom @Model.Nom</div>
+                <div class="profil-role">Livreur PickMe</div>
+                <div class="badge-statut statut-@Model.Statut.ToString()">
+                    @(Model.Statut == DeliveryWeb.Models.StatutLivreur.Approuve ? "✅ Approuvé" :
+                                        Model.Statut == DeliveryWeb.Models.StatutLivreur.EnAttente ? "⏳ En attente" :
+                                        Model.Statut == DeliveryWeb.Models.StatutLivreur.Suspendu ? "⚠️ Suspendu" :
+                                        "🚫 Bloqué")
+                </div>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">📞 Téléphone</span>
+                <span class="info-value">@Model.Telephone</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">📧 Email</span>
+                <span class="info-value">@(Model.Email ?? "—")</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">🪪 Permis</span>
+                <span class="info-value">@Model.NumPermis</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">🕐 Horaires</span>
+                <span class="info-value">
+                    @Model.HoraireDebut.ToString("HH:mm") – @Model.HoraireFin.ToString("HH:mm")
+                </span>
+            </div>
+        </div>
+
+        <!-- VÉHICULE -->
+        <div class="card">
+            <div class="card-title">🚗 Mon véhicule</div>
+            <div class="vehicule-card">
+                <span class="vehicule-icon-big">
+                    @(Model.TypeVehicule == DeliveryWeb.Models.TypeVehicule.Moto ? "🏍️" :
+                                        Model.TypeVehicule == DeliveryWeb.Models.TypeVehicule.Voiture ? "🚗" : "🚐")
+                </span>
+                <div>
+                    <div class="vehicule-name">@Model.TypeVehicule</div>
+                    <div class="vehicule-tarif">
+                        @(Model.TypeVehicule == DeliveryWeb.Models.TypeVehicule.Moto ? "150 FCFA/km" :
+                                                Model.TypeVehicule == DeliveryWeb.Models.TypeVehicule.Voiture ? "350 FCFA/km" :
+                                                "500 FCFA/km")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DROITE -->
+    <div>
+        <div class="card">
+            <div class="card-title">📊 Mes statistiques</div>
+            <div class="stat-mini">
+                <div class="stat-mini-item">
+                    <div class="stat-mini-val">@nbTotal</div>
+                    <div class="stat-mini-lbl">Commandes</div>
+                </div>
+                <div class="stat-mini-item">
+                    <div class="stat-mini-val">@nbLivrees</div>
+                    <div class="stat-mini-lbl">Livrées</div>
+                </div>
+                <div class="stat-mini-item">
+                    <div class="stat-mini-val" style="font-size:16px;">@revenus.ToString("N0")</div>
+                    <div class="stat-mini-lbl">FCFA gagnés</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">⚙️ Actions rapides</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <a href="/Livreur/Index"
+                   style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff3ed;border:1px solid #ffd4b8;border-radius:10px;text-decoration:none;color:#ff6a00;font-weight:600;font-size:13px;">
+                    🚴 Voir les commandes disponibles
+                </a>
+                <a href="/Livreur/Historique"
+                   style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#f7f5f2;border:1px solid #ece9e4;border-radius:10px;text-decoration:none;color:#555;font-weight:600;font-size:13px;">
+                    📋 Historique de mes livraisons
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

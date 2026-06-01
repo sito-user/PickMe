@@ -1,0 +1,1440 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "Accueil";
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PickMe — Livraison rapide & fiable</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --orange: #ff6a00;
+            --orange-light: #fff4ee;
+            --orange-border: #ffdcc8;
+            --text: #1e1e2e;
+            --muted: #7c7c8a;
+            --border: #eceaf4;
+            --bg: #f8f7ff;
+            --white: #ffffff;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--white);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255,255,255,.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 48px;
+            height: 66px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--orange);
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .nav-logo-icon svg {
+                width: 21px;
+                height: 21px;
+                fill: #fff;
+            }
+
+        .nav-logo-name {
+            font-family: 'Nunito', sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text);
+            letter-spacing: -.3px;
+        }
+
+            .nav-logo-name span {
+                color: var(--orange);
+            }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-link {
+            font-size: 14px;
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color .15s;
+        }
+
+            .nav-link:hover {
+                color: var(--orange);
+            }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-login {
+            padding: 9px 22px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            transition: all .15s;
+        }
+
+            .btn-login:hover {
+                border-color: var(--orange);
+                color: var(--orange);
+            }
+
+        .btn-register {
+            padding: 10px 22px;
+            background: var(--orange);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            transition: background .15s;
+        }
+
+            .btn-register:hover {
+                background: #e55f00;
+            }
+
+        .hamburger-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+            .hamburger-btn span {
+                width: 22px;
+                height: 2px;
+                background: var(--text);
+                border-radius: 2px;
+                display: block;
+            }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            padding-top: 66px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: 48px;
+            padding-right: 48px;
+        }
+
+        .hero-text {
+            padding: 60px 0;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--orange-light);
+            border: 1px solid var(--orange-border);
+            border-radius: 30px;
+            padding: 7px 16px;
+            font-size: 12px;
+            color: var(--orange);
+            font-weight: 700;
+            margin-bottom: 24px;
+            animation: fadeUp .5s ease both;
+        }
+
+        .badge-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--orange);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1)
+            }
+
+            50% {
+                opacity: .5;
+                transform: scale(.8)
+            }
+        }
+
+        .hero h1 {
+            font-family: 'Nunito', sans-serif;
+            font-size: clamp(34px, 3.8vw, 52px);
+            font-weight: 900;
+            line-height: 1.18;
+            color: var(--text);
+            letter-spacing: -.5px;
+            margin-bottom: 18px;
+            animation: fadeUp .5s ease .1s both;
+        }
+
+            .hero h1 .highlight {
+                color: var(--orange);
+                position: relative;
+                display: inline-block;
+            }
+
+                .hero h1 .highlight::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -2px;
+                    left: 0;
+                    right: 0;
+                    height: 3px;
+                    background: var(--orange);
+                    border-radius: 2px;
+                    opacity: .3;
+                }
+
+        .hero-sub {
+            font-size: 16px;
+            color: var(--muted);
+            line-height: 1.75;
+            max-width: 440px;
+            margin-bottom: 36px;
+            animation: fadeUp .5s ease .2s both;
+        }
+
+        .hero-ctas {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 44px;
+            flex-wrap: wrap;
+            animation: fadeUp .5s ease .3s both;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--orange);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all .15s;
+        }
+
+            .btn-primary:hover {
+                background: #e55f00;
+                transform: translateY(-2px);
+            }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--white);
+            color: var(--text);
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all .15s;
+        }
+
+            .btn-secondary:hover {
+                border-color: var(--orange);
+                color: var(--orange);
+                transform: translateY(-2px);
+            }
+
+        .social-proof {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            animation: fadeUp .5s ease .4s both;
+        }
+
+        .avatars {
+            display: flex;
+        }
+
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2.5px solid #fff;
+            background: var(--orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: #fff;
+            margin-left: -8px;
+        }
+
+            .avatar:first-child {
+                margin-left: 0;
+            }
+
+            .avatar:nth-child(2) {
+                background: #f59e0b;
+            }
+
+            .avatar:nth-child(3) {
+                background: #22c55e;
+            }
+
+        .social-text {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+            .social-text strong {
+                color: var(--text);
+                display: block;
+                font-size: 14px;
+            }
+
+        /* ── VISUAL HERO ── */
+        .hero-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 0 60px 40px;
+            animation: fadeUp .5s ease .2s both;
+            position: relative;
+        }
+
+        /* Téléphone mockup */
+        .phone-wrap {
+            position: relative;
+        }
+
+        .phone-shadow {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 30px;
+            background: rgba(255,106,0,.15);
+            border-radius: 50%;
+            filter: blur(16px);
+        }
+
+        .phone-frame {
+            width: 260px;
+            background: #fff;
+            border-radius: 36px;
+            border: 8px solid #1e1e2e;
+            box-shadow: 0 32px 80px rgba(30,30,46,.18), 0 0 0 1px rgba(0,0,0,.04);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .phone-notch {
+            height: 24px;
+            background: #1e1e2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .phone-notch-inner {
+            width: 80px;
+            height: 12px;
+            background: #0a0a14;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .phone-screen {
+            background: #f8f7ff;
+            padding: 0 0 16px;
+        }
+
+        /* App UI inside phone */
+        .app-topbar {
+            background: #fff;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+        }
+
+        .app-logo {
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            font-weight: 900;
+            color: #1e1e2e;
+        }
+
+            .app-logo span {
+                color: var(--orange);
+            }
+
+        .app-notif {
+            width: 28px;
+            height: 28px;
+            background: var(--orange-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+
+        .app-map {
+            height: 140px;
+            background: linear-gradient(135deg, #e8f4f8 0%, #dff0ea 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-road {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: #fff;
+            transform: translateY(-50%) rotate(-8deg);
+            border-radius: 3px;
+        }
+
+        .map-road2 {
+            position: absolute;
+            top: 30%;
+            left: 20%;
+            width: 60%;
+            height: 5px;
+            background: rgba(255,255,255,.7);
+            border-radius: 3px;
+            transform: rotate(25deg);
+        }
+
+        .map-pin-start {
+            position: absolute;
+            top: 38%;
+            left: 22%;
+            width: 20px;
+            height: 20px;
+        }
+
+        .map-pin-end {
+            position: absolute;
+            top: 55%;
+            left: 62%;
+            width: 20px;
+            height: 20px;
+        }
+
+        .pin-circle {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,.2);
+        }
+
+        .pin-green .pin-circle {
+            background: #22c55e;
+        }
+
+        .pin-orange .pin-circle {
+            background: var(--orange);
+        }
+
+        .map-truck {
+            position: absolute;
+            top: 44%;
+            left: 42%;
+            width: 28px;
+            height: 28px;
+            background: var(--orange);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(255,106,0,.4);
+            font-size: 14px;
+            animation: truckMove 3s ease-in-out infinite;
+        }
+
+        @@keyframes truckMove {
+            0%, 100% {
+                transform: translateX(0)
+            }
+
+            50% {
+                transform: translateX(8px)
+            }
+        }
+
+        .map-line {
+            position: absolute;
+            top: 50%;
+            left: 25%;
+            width: 42%;
+            height: 2px;
+            background: var(--orange);
+            opacity: .4;
+            transform: translateY(-50%) rotate(-5deg);
+        }
+
+        .app-body {
+            padding: 12px 14px;
+        }
+
+        .app-status-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+        }
+
+        .app-status-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .app-status-label {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .app-status-badge {
+            font-size: 9px;
+            background: #fff3ed;
+            color: var(--orange);
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .app-progress {
+            height: 4px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .app-progress-bar {
+            height: 100%;
+            background: var(--orange);
+            border-radius: 2px;
+            width: 65%;
+            animation: progress 3s ease-in-out infinite;
+        }
+
+        @@keyframes progress {
+            0% {
+                width: 40%
+            }
+
+            50% {
+                width: 75%
+            }
+
+            100% {
+                width: 40%
+            }
+        }
+
+        .app-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+        }
+
+        .app-step {
+            font-size: 8px;
+            color: #ccc;
+            text-align: center;
+        }
+
+            .app-step.done {
+                color: var(--orange);
+                font-weight: 700;
+            }
+
+        .app-price-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--orange-light);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .app-price-label {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .app-price-val {
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            font-weight: 900;
+            color: var(--orange);
+        }
+
+        /* Floating cards */
+        .float-card {
+            position: absolute;
+            background: #fff;
+            border-radius: 14px;
+            padding: 10px 14px;
+            box-shadow: 0 8px 32px rgba(30,30,46,.12);
+            border: 1px solid #eee;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .float-card-1 {
+            top: 20px;
+            right: -40px;
+            animation-delay: 0s;
+        }
+
+        .float-card-2 {
+            bottom: 60px;
+            left: -50px;
+            animation-delay: 1.5s;
+        }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-8px)
+            }
+        }
+
+        .float-inner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .float-icon {
+            font-size: 20px;
+        }
+
+        .float-label {
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .float-value {
+            font-family: 'Nunito', sans-serif;
+            font-size: 13px;
+            font-weight: 900;
+            color: var(--text);
+        }
+
+        @@keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ── TRUST BAR ── */
+        .trust-bar {
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 36px;
+            flex-wrap: wrap;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .trust-icon {
+            font-size: 16px;
+        }
+
+        /* ── SECTIONS ── */
+        section {
+            padding: 80px 48px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-full {
+            max-width: 100%;
+            padding: 80px 48px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .section-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: clamp(24px, 3vw, 36px);
+            font-weight: 900;
+            color: var(--text);
+            letter-spacing: -.3px;
+            text-align: center;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .section-sub {
+            font-size: 15px;
+            color: var(--muted);
+            text-align: center;
+            max-width: 460px;
+            margin: 0 auto 52px;
+            line-height: 1.7;
+        }
+
+        /* ── STEPS ── */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .step-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            transition: all .2s;
+        }
+
+            .step-card:hover {
+                box-shadow: 0 8px 32px rgba(255,106,0,.08);
+                transform: translateY(-4px);
+            }
+
+        .step-num {
+            width: 44px;
+            height: 44px;
+            background: var(--orange-light);
+            border: 1.5px solid var(--orange-border);
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Nunito', sans-serif;
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--orange);
+            margin-bottom: 16px;
+        }
+
+        .step-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        /* ── FEATURES ── */
+        .features-wrap {
+            background: var(--bg);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .feature-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .feature-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .feature-desc {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        /* ── TESTIMONIALS ── */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .stars {
+            color: var(--orange);
+            font-size: 14px;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .testimonial-text {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .author-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .author-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .author-role {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* ── CTA ── */
+        .cta-wrap {
+            background: var(--orange-light);
+            border-top: 1px solid var(--orange-border);
+            border-bottom: 1px solid var(--orange-border);
+        }
+
+        .cta-inner {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 72px 24px;
+        }
+
+            .cta-inner .section-title {
+                color: var(--text);
+            }
+
+            .cta-inner .section-sub {
+                color: var(--muted);
+                margin-bottom: 32px;
+            }
+
+        .cta-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--white);
+            border-top: 1px solid var(--border);
+            padding: 28px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-logo-name {
+            font-family: 'Nunito', sans-serif;
+            font-size: 17px;
+            font-weight: 900;
+            color: var(--text);
+        }
+
+            .footer-logo-name span {
+                color: var(--orange);
+            }
+
+        .footer-copy {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-link {
+            font-size: 13px;
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+            .footer-link:hover {
+                color: var(--orange);
+            }
+
+        /* ── MOBILE MENU ── */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            background: var(--white);
+            padding: 80px 28px 32px;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+            .mobile-menu.open {
+                display: flex;
+            }
+
+        .mobile-close {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .mobile-nav-link {
+            font-family: 'Nunito', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            text-decoration: none;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .mobile-actions {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        @@media (max-width: 960px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 100px 28px 60px;
+            }
+
+                .hero h1 {
+                    font-size: 36px;
+                }
+
+            .hero-sub {
+                margin: 0 auto 32px;
+            }
+
+            .hero-ctas {
+                justify-content: center;
+            }
+
+            .social-proof {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                padding: 0;
+            }
+
+            .float-card-1, .float-card-2 {
+                display: none;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+                max-width: 420px;
+                margin: 0 auto;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+                max-width: 420px;
+                margin: 0 auto;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .nav-links, .nav-actions {
+                display: none;
+            }
+
+            .hamburger-btn {
+                display: flex;
+            }
+
+            section {
+                padding: 56px 24px;
+            }
+
+            .section-full {
+                padding: 56px 24px;
+            }
+
+            .trust-bar {
+                padding: 16px 20px;
+                gap: 16px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            footer {
+                padding: 24px 20px;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MENU MOBILE -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-close" onclick="closeMobileMenu()">✕</button>
+        <a class="mobile-nav-link" href="#comment-ca-marche" onclick="closeMobileMenu()">Comment ça marche</a>
+        <a class="mobile-nav-link" href="#fonctionnalites" onclick="closeMobileMenu()">Fonctionnalités</a>
+        <a class="mobile-nav-link" href="#avis" onclick="closeMobileMenu()">Avis clients</a>
+        <div class="mobile-actions">
+            <a href="/Account/Login" style="display:block;text-align:center;padding:14px;border:1.5px solid #eceaf4;border-radius:11px;font-weight:600;font-size:15px;text-decoration:none;color:#1e1e2e;">Se connecter</a>
+            <a href="/Account/Register" style="display:block;text-align:center;padding:14px;background:#ff6a00;border-radius:11px;font-weight:700;font-size:15px;text-decoration:none;color:#fff;">Commencer </a>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="nav-logo" href="/">
+            <div class="nav-logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" /></svg>
+            </div>
+            <span class="nav-logo-name">Pick<span>Me</span></span>
+        </a>
+        <div class="nav-links">
+            <a class="nav-link" href="#comment-ca-marche">Comment ça marche</a>
+            <a class="nav-link" href="#fonctionnalites">Fonctionnalités</a>
+            <a class="nav-link" href="#avis">Avis clients</a>
+        </div>
+        <div class="nav-actions">
+            <a class="btn-login" href="/Account/Login">Se connecter</a>
+            <a class="btn-register" href="/Account/Register">Commencer →</a>
+        </div>
+        <button class="hamburger-btn" onclick="openMobileMenu()">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- HERO -->
+    <div style="max-width:1200px;margin:0 auto;">
+        <div class="hero">
+            <!-- TEXTE -->
+            <div class="hero-text">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    Disponible 7j/7 · Abidjan & environs
+                </div>
+                <h1>
+                    Envoyez vos colis<br>
+                    avec <span class="highlight">confiance</span><br>
+                    et sérénité 🚀
+                </h1>
+                <p class="hero-sub">
+                    Livreurs vérifiés, suivi GPS en temps réel et prix transparent dès le départ. Votre colis entre de bonnes mains.
+                </p>
+                <div class="hero-ctas">
+                    <a href="/Account/Register" class="btn-primary">Envoyer un colis →</a>
+                    <a href="#comment-ca-marche" class="btn-secondary">Comment ça marche</a>
+                </div>
+                <div class="social-proof">
+                    <div class="avatars">
+                        <div class="avatar">AK</div>
+                        <div class="avatar">FB</div>
+                        <div class="avatar">SD</div>
+                    </div>
+                    <div class="social-text">
+                        <strong>+2 500 livraisons réussies</strong>
+                        Rejoignez nos clients satisfaits ⭐ 4.8/5
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISUEL TÉLÉPHONE -->
+            <div class="hero-visual">
+                <div class="phone-wrap">
+                    <div class="phone-shadow"></div>
+
+                    <!-- Floating card 1 -->
+                    <div class="float-card float-card-1">
+                        <div class="float-inner">
+                            <span class="float-icon">✅</span>
+                            <div>
+                                <div class="float-label">Statut</div>
+                                <div class="float-value">Livré !</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating card 2 -->
+                    <div class="float-card float-card-2">
+                        <div class="float-inner">
+                            <span class="float-icon">⚡</span>
+                            <div>
+                                <div class="float-label">Prix estimé</div>
+                                <div class="float-value">1 250 FCFA</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phone frame -->
+                    <div class="phone-frame">
+                        <div class="phone-notch"><div class="phone-notch-inner"></div></div>
+                        <div class="phone-screen">
+                            <div class="app-topbar">
+                                <span class="app-logo">Pick<span>Me</span></span>
+                                <div class="app-notif">🔔</div>
+                            </div>
+
+                            <!-- Map -->
+                            <div class="app-map">
+                                <div class="map-road"></div>
+                                <div class="map-road2"></div>
+                                <div class="map-line"></div>
+                                <div class="map-pin-start pin-green"><div class="pin-circle"></div></div>
+                                <div class="map-pin-end pin-orange"><div class="pin-circle"></div></div>
+                                <div class="map-truck">🚴</div>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="app-body">
+                                <div class="app-status-card">
+                                    <div class="app-status-top">
+                                        <span class="app-status-label">Livraison #1042</span>
+                                        <span class="app-status-badge">En route 🚴</span>
+                                    </div>
+                                    <div class="app-progress"><div class="app-progress-bar"></div></div>
+                                    <div class="app-steps">
+                                        <span class="app-step done">Acceptée</span>
+                                        <span class="app-step done">En route</span>
+                                        <span class="app-step">Arrivée</span>
+                                        <span class="app-step">Livrée</span>
+                                    </div>
+                                </div>
+                                <div class="app-price-row">
+                                    <span class="app-price-label">💰 Prix total</span>
+                                    <span class="app-price-val">1 250 FCFA</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRUST BAR -->
+    <div class="trust-bar">
+        <div class="trust-item"><span class="trust-icon">🔒</span> Livreurs vérifiés</div>
+        <div class="trust-item"><span class="trust-icon">📍</span> Suivi GPS temps réel</div>
+        <div class="trust-item"><span class="trust-icon">💳</span> Paiement sécurisé</div>
+        <div class="trust-item"><span class="trust-icon">⭐</span> Noté 4.8/5</div>
+        <div class="trust-item"><span class="trust-icon">⚡</span> Prix transparent</div>
+    </div>
+
+    <!-- COMMENT ÇA MARCHE -->
+    <section id="comment-ca-marche">
+        <div class="section-label">Simple & rapide</div>
+        <h2 class="section-title">3 étapes pour envoyer votre colis</h2>
+        <p class="section-sub">De la commande à la livraison, tout se passe en quelques secondes sur PickMe.</p>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <div class="step-title">📍 Choisissez vos adresses</div>
+                <p class="step-desc">Sélectionnez le départ et l'arrivée sur notre carte interactive. Le prix s'affiche immédiatement, sans surprise.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <div class="step-title">🚴 Un livreur vous est assigné</div>
+                <p class="step-desc">Choisissez parmi nos livreurs disponibles et vérifiés, ou laissez le système faire le choix optimal pour vous.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <div class="step-title">📦 Suivez en temps réel</div>
+                <p class="step-desc">Regardez votre livreur se déplacer sur la carte. Notification à chaque étape jusqu'à la confirmation de livraison.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FONCTIONNALITÉS -->
+    <div class="features-wrap">
+        <section id="fonctionnalites" style="max-width:1100px;margin:0 auto;">
+            <div class="section-label">Pourquoi nous choisir</div>
+            <h2 class="section-title">Tout pour vous simplifier la vie</h2>
+            <p class="section-sub">Chaque fonctionnalité est pensée pour vous offrir une expérience de livraison sereine.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📍</div>
+                    <div class="feature-title">Suivi GPS en direct</div>
+                    <p class="feature-desc">Voyez votre livreur en temps réel sur la carte, mis à jour en continu.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-title">Prix transparent</div>
+                    <p class="feature-desc">Tarif calculé avant confirmation : distance, météo et horaire inclus.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <div class="feature-title">Livreurs certifiés</div>
+                    <p class="feature-desc">Chaque livreur est vérifié par notre équipe avant toute approbation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <div class="feature-title">Paiement flexible</div>
+                    <p class="feature-desc">Cash à la livraison ou carte bancaire via Stripe, à votre convenance.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <div class="feature-title">Notation des livreurs</div>
+                    <p class="feature-desc">Après livraison, évaluez votre livreur pour aider la communauté.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <div class="feature-title">Alertes instantanées</div>
+                    <p class="feature-desc">Notification à chaque étape : acceptée, en route, arrivée, livrée.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- TÉMOIGNAGES -->
+    <section id="avis" style="max-width:1100px;margin:0 auto;">
+        <div class="section-label">Ils nous font confiance</div>
+        <h2 class="section-title">Ce que disent nos clients 💬</h2>
+        <p class="section-sub">Des centaines de personnes utilisent PickMe chaque jour à Abidjan.</p>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="testimonial-text">J'ai envoyé des documents urgents et le livreur est arrivé en 30 minutes chrono. Le suivi en temps réel est vraiment rassurant !</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">AK</div>
+                    <div>
+                        <div class="author-name">Amara Koné</div>
+                        <div class="author-role">Client particulier, Cocody</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="testimonial-text">Parfait pour mon commerce ! Je peux envoyer plusieurs colis par jour. Les prix sont clairs et les livreurs toujours à l'heure.</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar" style="background:#f59e0b;">FD</div>
+                    <div>
+                        <div class="author-name">Fatou Diabaté</div>
+                        <div class="author-role">Commerçante, Plateau</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="testimonial-text">Interface simple, paiement sécurisé et livreur ponctuel. Je recommande PickMe à tous mes contacts sans hésitation !</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar" style="background:#22c55e;">SB</div>
+                    <div>
+                        <div class="author-name">Sékou Bamba</div>
+                        <div class="author-role">Professionnel, Marcory</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <!-- Colle ceci juste AVANT la balise <footer> -->
+    <div style="background:#f8f7ff;border-top:1px solid #eceaf4;padding:24px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <span style="font-size:20px;">🚴</span>
+            <div>
+                <div style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:#1e1e2e;">Vous êtes livreur ?</div>
+                <div style="font-size:12px;color:#7c7c8a;">Rejoignez notre réseau et commencez à livrer dès aujourd'hui</div>
+            </div>
+        </div>
+        <a href="/Livreur/Register"
+           style="padding:9px 20px;border:1.5px solid #eceaf4;border-radius:9px;font-size:13px;font-weight:600;color:#7c7c8a;text-decoration:none;transition:all .15s;white-space:nowrap;"
+           onmouseover="this.style.borderColor='#ff6a00';this.style.color='#ff6a00'"
+           onmouseout="this.style.borderColor='#eceaf4';this.style.color='#7c7c8a'">
+            Devenir livreur →
+        </a>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="nav-logo" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+            <div class="nav-logo-icon" style="width:30px;height:30px;border-radius:8px;">
+                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff;"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z" /></svg>
+            </div>
+            <span class="footer-logo-name">Pick<span>Me</span></span>
+        </div>
+        <span class="footer-copy">© @DateTime.Now.Year PickMe.</span>
+        <div class="footer-links">
+            <a class="footer-link" href="#">CGU</a>
+            <a class="footer-link" href="#">Confidentialité</a>
+            <a class="footer-link" href="#">Contact</a>
+            <a class="footer-link" href="/Livreur/Register">Devenir livreur</a>
+        </div>
+    </footer>
+
+    <script>
+        function openMobileMenu() {
+            document.getElementById('mobileMenu').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeMobileMenu() {
+            document.getElementById('mobileMenu').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+﻿@model List<DeliveryWeb.Models.Commande>
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Toutes les commandes";
+    var livreurs = ViewData["Livreurs"] as List<DeliveryWeb.Models.Livreur> ?? new();
+}
+
+@section Styles {
+    <style>
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+            .page-header h1 {
+                font-family: 'Nunito', sans-serif;
+                font-size: 24px;
+                font-weight: 800;
+                color: #1a1a1a;
+            }
+
+        .filters-bar {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+            .filter-field label {
+                font-size: 11px;
+                color: #aaa;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: .5px;
+            }
+
+            .filter-field select, .filter-field input {
+                background: #fafaf9;
+                border: 1.5px solid #ece9e4;
+                border-radius: 9px;
+                padding: 9px 12px;
+                font-size: 13px;
+                color: #1a1a1a;
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                min-width: 140px;
+            }
+
+                .filter-field select:focus, .filter-field input:focus {
+                    outline: none;
+                    border-color: #ff6a00;
+                }
+
+        .btn-filter {
+            background: #ff6a00;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-reset {
+            background: #fff;
+            color: #888;
+            border: 1.5px solid #ece9e4;
+            padding: 9px 16px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .table-card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 14px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        thead {
+            background: #f7f5f2;
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            color: #aaa;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 13px;
+            color: #555;
+            border-top: 1px solid #f0ede8;
+        }
+
+        tr:hover td {
+            background: #fafaf9;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .statut-EnAttente {
+            background: #fff8e1;
+            color: #f59e0b;
+        }
+
+        .statut-Acceptee {
+            background: #e8f5e9;
+            color: #22c55e;
+        }
+
+        .statut-EnCours {
+            background: #fff3ed;
+            color: #ff6a00;
+        }
+
+        .statut-Livree {
+            background: #e8f5e9;
+            color: #16a34a;
+        }
+
+        .statut-Annulee {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .prix {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            color: #ff6a00;
+            white-space: nowrap;
+        }
+
+        .total-bar {
+            background: #fff3ed;
+            border: 1px solid #ffd4b8;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #888;
+        }
+
+            .total-bar strong {
+                color: #ff6a00;
+                font-family: 'Nunito', sans-serif;
+                font-size: 16px;
+            }
+    </style>
+}
+
+<div class="page-header">
+    <h1>Commandes <span style="color:#aaa;font-size:18px;">(@Model.Count)</span></h1>
+</div>
+
+<!-- FILTRES -->
+<form method="get" asp-action="Commandes">
+    <div class="filters-bar">
+        <div class="filter-field">
+            <label>Statut</label>
+            <select name="statut">
+                <option value="">Tous</option>
+                <option value="EnAttente">En attente</option>
+                <option value="Acceptee">Acceptée</option>
+                <option value="EnCours">En cours</option>
+                <option value="Livree">Livrée</option>
+                <option value="Annulee">Annulée</option>
+            </select>
+        </div>
+        <div class="filter-field">
+            <label>Livreur</label>
+            <select name="livreurId">
+                <option value="">Tous les livreurs</option>
+                @foreach (var l in livreurs)
+                {
+                    <option value="@l.Id">@l.Prenom @l.Nom</option>
+                }
+            </select>
+        </div>
+        <div class="filter-field">
+            <label>Du</label>
+            <input type="date" name="dateDebut" />
+        </div>
+        <div class="filter-field">
+            <label>Au</label>
+            <input type="date" name="dateFin" />
+        </div>
+        <button type="submit" class="btn-filter">Filtrer</button>
+        <a href="/Admin/Commandes" class="btn-reset">Réinitialiser</a>
+    </div>
+</form>
+
+@if (Model.Any())
+{
+    <div class="total-bar">
+        Total filtré : <strong>@Model.Sum(c => c.PrixCalcule).ToString("N0") FCFA</strong>
+        sur @Model.Count commande(s) —
+        <strong>@Model.Count(c => c.Statut == DeliveryWeb.Models.StatutCommande.Livree)</strong> livrée(s)
+    </div>
+}
+
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Client</th>
+                <th>Départ</th>
+                <th>Arrivée</th>
+                <th>Livreur</th>
+                <th>Prix</th>
+                <th>Paiement</th>
+                <th>Statut</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="9" style="text-align:center;color:#ccc;padding:32px;">Aucune commande</td></tr>
+            }
+            else
+            {
+                @foreach (var cmd in Model)
+                {
+                    <tr>
+                        <td style="font-weight:700;color:#1a1a1a;">#@cmd.Id</td>
+                        <td>@(cmd.Client != null ? $"{cmd.Client.Prenom} {cmd.Client.Nom}" : "—")</td>
+                        <td title="@cmd.AdresseDepart">@(cmd.AdresseDepart.Length > 20 ? cmd.AdresseDepart.Substring(0, 20) + "…" : cmd.AdresseDepart)</td>
+                        <td title="@cmd.AdresseArrivee">@(cmd.AdresseArrivee.Length > 20 ? cmd.AdresseArrivee.Substring(0, 20) + "…" : cmd.AdresseArrivee)</td>
+                        <td>@(cmd.Livreur != null ? $"{cmd.Livreur.Prenom} {cmd.Livreur.Nom}" : "—")</td>
+                        <td class="prix">@cmd.PrixCalcule.ToString("N0")</td>
+                        <td>@cmd.ModePaiement</td>
+                        <td><span class="badge statut-@cmd.Statut.ToString()">@cmd.Statut</span></td>
+                        <td style="white-space:nowrap;">@cmd.DateHeure.ToString("dd/MM HH:mm")</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

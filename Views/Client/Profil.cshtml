@@ -1,0 +1,224 @@
+﻿@model DeliveryWeb.Models.Client
+@{
+    Layout = "~/Views/Shared/_LayoutClient.cshtml";
+    ViewData["Title"] = "Mon profil";
+    ViewData["Page"] = "profil";
+
+    var nbTotal = (int)(ViewData["NbTotal"] ?? 0);
+    var nbLivrees = (int)(ViewData["NbLivrees"] ?? 0);
+}
+
+@section Styles {
+    <style>
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+            .page-header h1 {
+                font-family: 'Nunito',sans-serif;
+                font-size: 24px;
+                font-weight: 800;
+                color: #1a1a1a;
+            }
+
+            .page-header p {
+                font-size: 14px;
+                color: #aaa;
+                margin-top: 4px;
+            }
+
+        .profil-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-family: 'Nunito',sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 18px;
+        }
+
+        .avatar-section {
+            text-align: center;
+            padding: 8px 0 20px;
+            border-bottom: 1px solid #f7f5f2;
+            margin-bottom: 20px;
+        }
+
+        .avatar-big {
+            width: 80px;
+            height: 80px;
+            background: #ff6a00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            margin: 0 auto 12px;
+        }
+
+        .profil-name {
+            font-family: 'Nunito',sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: #1a1a1a;
+        }
+
+        .profil-role {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 3px;
+        }
+
+        .badge-membre {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff3ed;
+            border: 1px solid #ffd4b8;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 12px;
+            color: #ff6a00;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f7f5f2;
+            font-size: 13px;
+        }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+        .info-label {
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .stat-mini {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-mini-item {
+            background: #f7f5f2;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .stat-mini-val {
+            font-family: 'Nunito',sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            color: #ff6a00;
+        }
+
+        .stat-mini-lbl {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 3px;
+        }
+
+        @@media (max-width:768px) {
+            .profil-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
+
+<div class="page-header">
+    <h1>Mon profil 👤</h1>
+    <p>Vos informations personnelles</p>
+</div>
+
+<div class="profil-grid">
+
+    <!-- GAUCHE -->
+    <div>
+        <div class="card">
+            <div class="avatar-section">
+                <div class="avatar-big">
+                    @Model.Prenom.Substring(0, 1).ToUpper()@Model.Nom.Substring(0, 1).ToUpper()
+                </div>
+                <div class="profil-name">@Model.Prenom @Model.Nom</div>
+                <div class="profil-role">Client PickMe</div>
+                <div class="badge-membre">
+                    🗓️ Membre depuis @Model.DateInscription.ToString("MMMM yyyy",
+                                        new System.Globalization.CultureInfo("fr-FR"))
+                </div>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">📞 Téléphone</span>
+                <span class="info-value">@Model.Telephone</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">📧 Email</span>
+                <span class="info-value">@(Model.Email ?? "Non renseigné")</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Statut</span>
+                <span class="info-value" style="color:#22c55e;">✅ Actif</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- DROITE -->
+    <div>
+        <div class="card">
+            <div class="card-title">📦 Résumé de vos commandes</div>
+            <div class="stat-mini">
+                <div class="stat-mini-item">
+                    <div class="stat-mini-val">@nbTotal</div>
+                    <div class="stat-mini-lbl">Total commandes</div>
+                </div>
+                <div class="stat-mini-item">
+                    <div class="stat-mini-val">@nbLivrees</div>
+                    <div class="stat-mini-lbl">Livrées</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">⚙️ Actions rapides</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <a href="/Client/NouvelleCommande"
+                   style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff3ed;border:1px solid #ffd4b8;border-radius:10px;text-decoration:none;color:#ff6a00;font-weight:600;font-size:13px;">
+                    📦 Passer une nouvelle commande
+                </a>
+                <a href="/Client/Historique"
+                   style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#f7f5f2;border:1px solid #ece9e4;border-radius:10px;text-decoration:none;color:#555;font-weight:600;font-size:13px;">
+                    📋 Voir mon historique
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

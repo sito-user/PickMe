@@ -1,0 +1,514 @@
+﻿@model DeliveryWeb.Models.Commande
+@{
+    Layout = "~/Views/Shared/_LayoutClient.cshtml";
+    ViewData["Title"] = "Suivi commande #" + Model.Id;
+    ViewData["Page"] = "suivi";
+
+    var inv = System.Globalization.CultureInfo.InvariantCulture;
+    var latDep = Model.LatDepart.ToString(inv);
+    var lngDep = Model.LngDepart.ToString(inv);
+    var latArr = Model.LatArrivee.ToString(inv);
+    var lngArr = Model.LngArrivee.ToString(inv);
+    var cmdId = Model.Id.ToString();
+}
+
+@section Styles {
+    <style>
+        .suivi-wrap {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+        }
+
+        #map {
+            height: 460px;
+            border-radius: 16px;
+            border: 1px solid #ece9e4;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .panel-card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .panel-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 14px;
+        }
+
+        .statut-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .b-attente {
+            background: #fff8e1;
+            color: #f59e0b;
+        }
+
+        .b-acceptee {
+            background: #e8f5e9;
+            color: #22c55e;
+        }
+
+        .b-encours {
+            background: #fff3ed;
+            color: #ff6a00;
+        }
+
+        .b-livree {
+            background: #e8f5e9;
+            color: #16a34a;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding-bottom: 14px;
+            position: relative;
+        }
+
+            .step:last-child {
+                padding-bottom: 0;
+            }
+
+            .step::before {
+                content: '';
+                position: absolute;
+                left: 11px;
+                top: 26px;
+                width: 2px;
+                bottom: 0;
+                background: #ece9e4;
+            }
+
+            .step:last-child::before {
+                display: none;
+            }
+
+        .step-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ece9e4;
+            border: 2px solid #ece9e4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 11px;
+            font-weight: 800;
+            color: #aaa;
+            z-index: 1;
+            transition: all .3s;
+        }
+
+            .step-dot.done {
+                background: #22c55e;
+                border-color: #22c55e;
+                color: #fff;
+            }
+
+            .step-dot.active {
+                background: #ff6a00;
+                border-color: #ff6a00;
+                color: #fff;
+                animation: pulse 1.5s infinite;
+            }
+
+        @@keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(255,106,0,.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(255,106,0,0);
+            }
+        }
+
+        .step-lbl {
+            font-size: 13px;
+            color: #aaa;
+            font-weight: 500;
+            padding-top: 4px;
+        }
+
+            .step-lbl.done {
+                color: #16a34a;
+                font-weight: 600;
+            }
+
+            .step-lbl.active {
+                color: #ff6a00;
+                font-weight: 700;
+            }
+
+        .lv-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lv-avatar {
+            width: 44px;
+            height: 44px;
+            background: #ff6a00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .lv-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #1a1a1a;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .lv-sub {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 2px;
+        }
+
+        .d-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 0;
+            border-bottom: 1px solid #f7f5f2;
+            font-size: 13px;
+        }
+
+            .d-row:last-child {
+                border-bottom: none;
+            }
+
+        .d-lbl {
+            color: #aaa;
+        }
+
+        .d-val {
+            font-weight: 600;
+            color: #1a1a1a;
+            text-align: right;
+            font-size: 12px;
+            max-width: 180px;
+        }
+
+        .d-prix {
+            font-family: 'Nunito', sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            color: #ff6a00;
+        }
+
+        .wait-banner {
+            background: #fff8e1;
+            border: 1px solid #fde68a;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .spin {
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid #fde68a;
+            border-top-color: #f59e0b;
+            border-radius: 50%;
+            animation: rot 1s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @@keyframes rot {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            color: #fff;
+            padding: 14px 22px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 8px 32px rgba(0,0,0,.2);
+            transform: translateY(120px);
+            opacity: 0;
+            transition: all .3s ease;
+            max-width: 320px;
+        }
+
+            .toast.show {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            .toast.success {
+                background: #16a34a;
+            }
+
+            .toast.orange {
+                background: #ff6a00;
+            }
+
+        @@media (max-width: 900px) {
+            .suivi-wrap {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 280px;
+            }
+        }
+    </style>
+}
+
+<div class="toast" id="toast"></div>
+
+<!-- EN-TÊTE -->
+<div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <div>
+        <h1 style="font-family:'Nunito',sans-serif;font-size:24px;font-weight:800;color:#1a1a1a;">
+            Suivi en temps réel 📍
+        </h1>
+        <p style="font-size:14px;color:#aaa;margin-top:4px;">Commande #@Model.Id</p>
+    </div>
+    <a href="/Client/Index"
+       style="font-size:13px;color:#aaa;text-decoration:none;border:1px solid #ece9e4;padding:8px 16px;border-radius:9px;">
+        ← Dashboard
+    </a>
+</div>
+
+<!-- BANNIÈRE ATTENTE -->
+@if (Model.Statut == DeliveryWeb.Models.StatutCommande.EnAttente)
+{
+    <div class="wait-banner">
+        <div class="spin"></div>
+        <div>
+            <div style="font-size:13px;font-weight:700;color:#92400e;">En attente d'un livreur</div>
+            <div style="font-size:12px;color:#a16207;">Un livreur va accepter votre commande...</div>
+        </div>
+    </div>
+}
+
+<div class="suivi-wrap">
+
+    <!-- CARTE -->
+    <div>
+        <div id="map"></div>
+    </div>
+
+    <!-- PANNEAU DROITE -->
+    <div class="panel">
+
+        <!-- STATUT -->
+        <div class="panel-card">
+            <div class="panel-title">Progression</div>
+            <div id="badge" class="statut-badge b-attente">⏳ En attente</div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-dot done" id="d1">✓</div>
+                    <div class="step-lbl done" id="l1">Commande passée</div>
+                </div>
+                <div class="step">
+                    <div class="step-dot" id="d2">2</div>
+                    <div class="step-lbl" id="l2">Livreur assigné</div>
+                </div>
+                <div class="step">
+                    <div class="step-dot" id="d3">3</div>
+                    <div class="step-lbl" id="l3">En route vers vous</div>
+                </div>
+                <div class="step">
+                    <div class="step-dot" id="d4">4</div>
+                    <div class="step-lbl" id="l4">Livré ✅</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LIVREUR (caché jusqu'à assignation) -->
+        <div class="panel-card" id="livreurCard" style="display:none;">
+            <div class="panel-title">Votre livreur</div>
+            <div class="lv-info">
+                <div class="lv-avatar" id="lvInit">?</div>
+                <div>
+                    <div class="lv-name" id="lvNom">—</div>
+                    <div class="lv-sub" id="lvSub">🏍️ En route</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DÉTAILS -->
+        <div class="panel-card">
+            <div class="panel-title">Détails</div>
+            <div class="d-row">
+                <span class="d-lbl">🟢 Départ</span>
+                <span class="d-val">@Model.AdresseDepart</span>
+            </div>
+            <div class="d-row">
+                <span class="d-lbl">🔴 Arrivée</span>
+                <span class="d-val">@Model.AdresseArrivee</span>
+            </div>
+            <div class="d-row">
+                <span class="d-lbl">Destinataire</span>
+                <span class="d-val">@Model.NomDestinataire</span>
+            </div>
+            <div class="d-row">
+                <span class="d-lbl">Téléphone</span>
+                <span class="d-val">@Model.TelDestinataire</span>
+            </div>
+            <div class="d-row">
+                <span class="d-lbl">Véhicule</span>
+                <span class="d-val">@Model.TypeVehicule</span>
+            </div>
+            <div class="d-row">
+                <span class="d-lbl">Type</span>
+                <span class="d-val">@(Model.EstExpress ? "🚀 Express" : "🕐 Standard")</span>
+            </div>
+            <div class="d-row">
+                <span class="d-lbl">Paiement</span>
+                <span class="d-val">@Model.ModePaiement</span>
+            </div>
+            <div class="d-row">
+                <span class="d-lbl">Prix</span>
+                <span class="d-prix">@Model.PrixCalcule.ToString("N0") FCFA</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // ── CARTE LEAFLET ──
+        const map = L.map('map').setView([@latDep, @lngDep], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        const iVert = L.divIcon({
+            html:'<div style="background:#22c55e;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',
+            iconSize:[20,20], className:''
+        });
+        const iOrange = L.divIcon({
+            html:'<div style="background:#ff6a00;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',
+            iconSize:[20,20], className:''
+        });
+        const iMoto = L.divIcon({
+            html:'<div style="background:#1a1a1a;width:32px;height:32px;border-radius:10px;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:16px;">🏍️</div>',
+            iconSize:[38,38], className:''
+        });
+
+        L.marker([@latDep, @lngDep], { icon: iVert   }).addTo(map).bindPopup('🟢 Départ');
+        L.marker([@latArr, @lngArr], { icon: iOrange }).addTo(map).bindPopup('🔴 Arrivée');
+        L.polyline([[@latDep, @lngDep], [@latArr, @lngArr]], {
+            color:'#ff6a00', weight:3, opacity:.35, dashArray:'8,6'
+        }).addTo(map);
+
+        let motoMarker = L.marker([@latDep, @lngDep], { icon: iMoto }).addTo(map);
+        map.fitBounds([[@latDep, @lngDep], [@latArr, @lngArr]], { padding:[50,50] });
+
+        // ── SIGNALR ──
+        const cmdId = '@cmdId';
+        const conn  = new signalR.HubConnectionBuilder()
+            .withUrl("/trackingHub")
+            .withAutomaticReconnect()
+            .build();
+
+        conn.on("RecevoirPosition", (lat, lng) => {
+            motoMarker.setLatLng([lat, lng]);
+        });
+
+        conn.on("StatutMisAJour", (statut, nom) => {
+            updateUI(statut, nom);
+        });
+
+        conn.start().then(async () => {
+            await conn.invoke("RejoindreGroupe", cmdId);
+        }).catch(e => console.error("SignalR:", e));
+
+        // ── MISE À JOUR UI ──
+        function updateUI(statut, nom) {
+            const b = document.getElementById('badge');
+            if (statut === 'Acceptee') {
+                b.className = 'statut-badge b-acceptee';
+                b.textContent = '✅ Livreur assigné';
+                step(2);
+                if (nom) showLivreur(nom, '🚴 En route...');
+                showToast('🚴 ' + nom + ' a accepté !', 'orange');
+            } else if (statut === 'EnCours') {
+                b.className = 'statut-badge b-encours';
+                b.textContent = '🚴 En route';
+                step(3);
+                if (nom) showLivreur(nom, '🚴 En route vers vous...');
+                showToast('📍 Votre livreur est en route !', 'orange');
+            } else if (statut === 'Livree') {
+                b.className = 'statut-badge b-livree';
+                b.textContent = '✅ Livré !';
+                step(4);
+                if (nom) showLivreur(nom, '✅ Livraison effectuée !');
+                showToast('🎉 Commande livrée avec succès !', 'success');
+                setTimeout(() => window.location.href = '/Client/Historique', 4000);
+            }
+        }
+
+        function step(n) {
+            for (let i = 1; i <= 4; i++) {
+                const d = document.getElementById('d' + i);
+                const l = document.getElementById('l' + i);
+                if (i < n)       { d.className = 'step-dot done';   d.textContent = '✓'; l.className = 'step-lbl done'; }
+                else if (i === n){ d.className = 'step-dot active'; d.textContent = i;   l.className = 'step-lbl active'; }
+                else             { d.className = 'step-dot';        d.textContent = i;   l.className = 'step-lbl'; }
+            }
+        }
+
+        function showLivreur(nom, sub) {
+            document.getElementById('livreurCard').style.display = 'block';
+            document.getElementById('lvNom').textContent = nom;
+            document.getElementById('lvSub').textContent = sub;
+            document.getElementById('lvInit').textContent =
+                nom.split(' ').map(n => n[0] || '').join('').toUpperCase().substring(0,2);
+        }
+
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + type + ' show';
+            setTimeout(() => { t.className = 'toast'; }, 5000);
+        }
+    </script>
+}

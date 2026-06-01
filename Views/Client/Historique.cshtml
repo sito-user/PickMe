@@ -1,0 +1,237 @@
+﻿@using DeliveryWeb.Models
+@model List<DeliveryWeb.Models.Commande>
+@{
+    Layout = "~/Views/Shared/_LayoutClient.cshtml";
+    ViewData["Title"] = "Mes commandes";
+    ViewData["Page"] = "historique";
+}
+
+@section Styles {
+    <style>
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+            .page-header h1 {
+                font-family: 'Nunito', sans-serif;
+                font-size: 24px;
+                font-weight: 800;
+                color: #1a1a1a;
+            }
+
+            .page-header p {
+                font-size: 14px;
+                color: #aaa;
+                margin-top: 4px;
+            }
+
+        .commande-card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 12px;
+            transition: box-shadow .2s;
+        }
+
+            .commande-card:hover {
+                box-shadow: 0 4px 20px rgba(0,0,0,.06);
+            }
+
+        .commande-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .commande-id {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .commande-date {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .statut-EnAttente {
+            background: #fff8e1;
+            color: #f59e0b;
+        }
+
+        .statut-Acceptee {
+            background: #e8f5e9;
+            color: #22c55e;
+        }
+
+        .statut-EnCours {
+            background: #fff3ed;
+            color: #ff6a00;
+        }
+
+        .statut-Livree {
+            background: #e8f5e9;
+            color: #16a34a;
+        }
+
+        .statut-Annulee {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .adresses {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .adresse-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-green {
+            background: #22c55e;
+        }
+
+        .dot-orange {
+            background: #ff6a00;
+        }
+
+        .commande-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .meta {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .prix {
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            font-weight: 900;
+            color: #ff6a00;
+        }
+
+        .btn-noter {
+            background: #fff3ed;
+            color: #ff6a00;
+            border: 1px solid #ffd4b8;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty p {
+            font-size: 15px;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background: #ff6a00;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            font-family: 'Nunito', sans-serif;
+        }
+    </style>
+}
+
+<div class="page-header">
+    <h1>Mes commandes 📦</h1>
+    <p>Retrouvez toutes vos livraisons passées et en cours</p>
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="empty">
+        <div class="empty-icon">📭</div>
+        <p>Vous n'avez pas encore passé de commande</p>
+        <a href="/Client/NouvelleCommande" class="btn-primary">Passer ma première commande →</a>
+    </div>
+}
+else
+{
+    @foreach (var cmd in Model)
+    {
+        <div class="commande-card">
+            <div class="commande-header">
+                <div>
+                    <div class="commande-id">Commande #@cmd.Id</div>
+                    <div class="commande-date">@cmd.DateHeure.ToString("dd/MM/yyyy à HH:mm")</div>
+                </div>
+                <span class="badge statut-@cmd.Statut.ToString()">@cmd.Statut</span>
+            </div>
+
+            <div class="adresses">
+                <div class="adresse-row">
+                    <div class="dot dot-green"></div>
+                    <span>@cmd.AdresseDepart</span>
+                </div>
+                <div class="adresse-row">
+                    <div class="dot dot-orange"></div>
+                    <span>@cmd.AdresseArrivee</span>
+                </div>
+            </div>
+
+            <div class="commande-footer">
+                <div>
+                    <!-- ✅ -->
+                    <div class="meta">
+                        🚴 @(cmd.Livreur != null ? $"{cmd.Livreur.Prenom} {cmd.Livreur.Nom}" : "Non assigné")
+                        · @cmd.ModePaiement
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    @if (cmd.Statut == StatutCommande.Livree && cmd.Avis == null)
+                    {
+                        <a href="/Client/NoterCommande/@cmd.Id" class="btn-noter">⭐ Noter</a>
+                    }
+                    <span class="prix">@cmd.PrixCalcule.ToString("N0") FCFA</span>
+                </div>
+            </div>
+        </div>
+    }
+}

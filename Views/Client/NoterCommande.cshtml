@@ -1,0 +1,244 @@
+﻿@model DeliveryWeb.Models.Commande
+@{
+    Layout = "~/Views/Shared/_LayoutClient.cshtml";
+    ViewData["Title"] = "Noter la livraison";
+    ViewData["Page"] = "historique";
+}
+
+@section Styles {
+    <style>
+        .page-header {
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+            .page-header h1 {
+                font-family: 'Nunito',sans-serif;
+                font-size: 24px;
+                font-weight: 800;
+                color: #1a1a1a;
+            }
+
+            .page-header p {
+                font-size: 14px;
+                color: #aaa;
+                margin-top: 4px;
+            }
+
+        .card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 16px;
+            padding: 28px;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .card-title {
+            font-family: 'Nunito',sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .livreur-recap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #f7f5f2;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+        }
+
+        .livreur-avatar {
+            width: 44px;
+            height: 44px;
+            background: #ff6a00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .livreur-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .livreur-sub {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        /* ÉTOILES */
+        .stars-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .star {
+            font-size: 40px;
+            cursor: pointer;
+            transition: transform .15s;
+            filter: grayscale(1);
+            opacity: .4;
+        }
+
+            .star:hover, .star.active {
+                filter: grayscale(0);
+                opacity: 1;
+                transform: scale(1.15);
+            }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+            .field label {
+                display: block;
+                font-size: 11px;
+                color: #aaa;
+                font-weight: 600;
+                margin-bottom: 5px;
+                text-transform: uppercase;
+                letter-spacing: .5px;
+            }
+
+            .field textarea {
+                width: 100%;
+                background: #fafaf9;
+                border: 1.5px solid #ece9e4;
+                border-radius: 10px;
+                padding: 12px 14px;
+                color: #1a1a1a;
+                font-size: 14px;
+                font-family: 'Plus Jakarta Sans',sans-serif;
+                resize: vertical;
+                transition: border .15s;
+            }
+
+                .field textarea:focus {
+                    outline: none;
+                    border-color: #ff6a00;
+                    background: #fff;
+                }
+
+                .field textarea::placeholder {
+                    color: #ccc;
+                }
+
+        .note-label {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #ff6a00;
+            margin-bottom: 16px;
+            min-height: 22px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #ff6a00;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 800;
+            font-family: 'Nunito',sans-serif;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+            .btn-submit:hover {
+                background: #e55f00;
+            }
+
+        .btn-annuler {
+            display: block;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #aaa;
+            text-decoration: none;
+        }
+
+            .btn-annuler:hover {
+                color: #ff6a00;
+            }
+    </style>
+}
+
+<div class="page-header">
+    <h1>⭐ Noter la livraison</h1>
+    <p>Commande #@Model.Id · votre avis aide toute la communauté</p>
+</div>
+
+<div class="card">
+
+    <!-- LIVREUR -->
+    @if (Model.Livreur != null)
+    {
+        var initiales = $"{Model.Livreur.Prenom[0]}{Model.Livreur.Nom[0]}".ToUpper();
+        <div class="livreur-recap">
+            <div class="livreur-avatar">@initiales</div>
+            <div>
+                <div class="livreur-name">@Model.Livreur.Prenom @Model.Livreur.Nom</div>
+                <div class="livreur-sub">🏍️ @Model.Livreur.TypeVehicule · Livraison effectuée</div>
+            </div>
+        </div>
+    }
+
+    <form asp-action="NoterCommande" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="commandeId" value="@Model.Id" />
+        <input type="hidden" name="note" id="noteInput" value="0" />
+
+        <div class="card-title">Votre note</div>
+
+        <!-- ÉTOILES INTERACTIVES -->
+        <div class="stars-row">
+            <span class="star" data-val="1" onclick="setNote(1)">⭐</span>
+            <span class="star" data-val="2" onclick="setNote(2)">⭐</span>
+            <span class="star" data-val="3" onclick="setNote(3)">⭐</span>
+            <span class="star" data-val="4" onclick="setNote(4)">⭐</span>
+            <span class="star" data-val="5" onclick="setNote(5)">⭐</span>
+        </div>
+        <div class="note-label" id="noteLabel">Cliquez pour noter</div>
+
+        <div class="field">
+            <label>Commentaire (optionnel)</label>
+            <textarea name="commentaire" rows="3"
+                      placeholder="Rapide, ponctuel, soigneux... partagez votre expérience"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit" id="btnSoumettre" disabled>
+            Envoyer mon avis →
+        </button>
+        <a href="/Client/Historique" class="btn-annuler">Annuler</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const labels = ['', 'Très décevant 😞', 'Décevant 😕', 'Correct 😐', 'Bien 😊', 'Excellent ! 🤩'];
+
+        function setNote(val) {
+            document.getElementById('noteInput').value = val;
+            document.getElementById('noteLabel').textContent = labels[val];
+            document.getElementById('btnSoumettre').disabled = false;
+            document.querySelectorAll('.star').forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.val) <= val);
+            });
+        }
+    </script>
+}

@@ -1,0 +1,298 @@
+﻿@model List<DeliveryWeb.Models.Livreur>
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Gestion des livreurs";
+}
+
+@section Styles {
+    <style>
+        .page-header {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+            .page-header h1 {
+                font-family: 'Nunito', sans-serif;
+                font-size: 24px;
+                font-weight: 800;
+                color: #1a1a1a;
+            }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1.5px solid #ece9e4;
+            background: #fff;
+            color: #888;
+            text-decoration: none;
+            transition: all .15s;
+        }
+
+            .filter-btn:hover, .filter-btn.active {
+                border-color: #ff6a00;
+                color: #ff6a00;
+                background: #fff3ed;
+            }
+
+        .toast {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 13px;
+        }
+
+        .toast-success {
+            background: #e8f5e9;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+        }
+
+        .toast-warning {
+            background: #fff8e1;
+            border: 1px solid #fde68a;
+            color: #d97706;
+        }
+
+        .toast-danger {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #dc2626;
+        }
+
+        .livreur-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .livreur-card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .livreur-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .livreur-avatar {
+            width: 44px;
+            height: 44px;
+            background: #ff6a00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .livreur-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .livreur-sub {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 2px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .statut-EnAttente {
+            background: #fff8e1;
+            color: #f59e0b;
+        }
+
+        .statut-Approuve {
+            background: #e8f5e9;
+            color: #16a34a;
+        }
+
+        .statut-Suspendu {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .statut-Bloque {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .livreur-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .info-item {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+            .info-item strong {
+                color: #555;
+                display: block;
+                font-size: 13px;
+            }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-approuver {
+            background: #ff6a00;
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-suspendre {
+            background: #fff;
+            color: #d97706;
+            border: 1.5px solid #fde68a;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-bloquer {
+            background: #fff;
+            color: #dc2626;
+            border: 1.5px solid #fca5a5;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 48px;
+            color: #ccc;
+            font-size: 15px;
+        }
+    </style>
+}
+
+<div class="page-header">
+    <h1>Livreurs <span style="color:#aaa;font-size:18px;">(@Model.Count)</span></h1>
+</div>
+
+<div class="filters">
+    <a href="/Admin/Livreurs" class="filter-btn @(ViewData["Statut"] == null ? "active" : "")">Tous</a>
+    <a href="/Admin/Livreurs?statut=EnAttente" class="filter-btn @(ViewData["Statut"]?.ToString() == "EnAttente" ? "active" : "")">⏳ En attente</a>
+    <a href="/Admin/Livreurs?statut=Approuve" class="filter-btn @(ViewData["Statut"]?.ToString() == "Approuve" ? "active" : "")">✅ Approuvés</a>
+    <a href="/Admin/Livreurs?statut=Suspendu" class="filter-btn @(ViewData["Statut"]?.ToString() == "Suspendu" ? "active" : "")">⚠️ Suspendus</a>
+    <a href="/Admin/Livreurs?statut=Bloque" class="filter-btn @(ViewData["Statut"]?.ToString() == "Bloque" ? "active" : "")">🚫 Bloqués</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="toast toast-success">✅ @TempData["Success"]</div>
+}
+@if (TempData["Warning"] != null)
+{
+    <div class="toast toast-warning">⚠️ @TempData["Warning"]</div>
+}
+@if (TempData["Danger"] != null)
+{
+    <div class="toast toast-danger">🚫 @TempData["Danger"]</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="empty">Aucun livreur dans cette catégorie</div>
+}
+else
+{
+    <div class="livreur-grid">
+        @foreach (var l in Model)
+        {
+            <div class="livreur-card">
+                <div class="livreur-header">
+                    <div class="livreur-avatar">@l.Prenom.Substring(0, 1)@l.Nom.Substring(0, 1)</div>
+                    <div>
+                        <div class="livreur-name">@l.Prenom @l.Nom</div>
+                        <div class="livreur-sub">@l.TypeVehicule</div>
+                    </div>
+                    <span class="badge statut-@l.Statut.ToString()">@l.Statut</span>
+                </div>
+
+                <div class="livreur-info">
+                    <div class="info-item"><strong>@l.Telephone</strong>Téléphone</div>
+                    <div class="info-item"><strong>@l.Email</strong>Email</div>
+                    <div class="info-item"><strong>@l.NumPermis</strong>Permis</div>
+                    <div class="info-item"><strong>@l.HoraireDebut – @l.HoraireFin</strong>Horaires</div>
+                </div>
+
+                <div class="actions">
+                    @if (l.Statut != DeliveryWeb.Models.StatutLivreur.Approuve)
+                    {
+                        <form asp-action="Approuver" method="post" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="livreurId" value="@l.Id" />
+                            <button type="submit" class="btn-approuver">✓ Approuver</button>
+                        </form>
+                    }
+                    @if (l.Statut != DeliveryWeb.Models.StatutLivreur.Suspendu)
+                    {
+                        <form asp-action="Suspendre" method="post" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="livreurId" value="@l.Id" />
+                            <button type="submit" class="btn-suspendre">⚠ Suspendre</button>
+                        </form>
+                    }
+                    @if (l.Statut != DeliveryWeb.Models.StatutLivreur.Bloque)
+                    {
+                        <form asp-action="Bloquer" method="post" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="livreurId" value="@l.Id" />
+                            <button type="submit" class="btn-bloquer">🚫 Bloquer</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,328 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PickMe Admin — @ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f7f5f2;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 100;
+            transition: transform .3s;
+        }
+
+        .sidebar-logo {
+            padding: 20px 24px;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: #ff6a00;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .logo-icon svg {
+                width: 20px;
+                height: 20px;
+                fill: #fff;
+            }
+
+        .logo-name {
+            font-family: 'Nunito', sans-serif;
+            font-size: 17px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+            .logo-name span {
+                color: #ff6a00;
+            }
+
+        .admin-badge {
+            font-size: 10px;
+            background: #ff6a00;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            color: #888;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all .15s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+            .nav-item:hover {
+                background: #2a2a2a;
+                color: #fff;
+            }
+
+            .nav-item.active {
+                background: #ff6a00;
+                color: #fff;
+                font-weight: 600;
+            }
+
+            .nav-item svg {
+                width: 18px;
+                height: 18px;
+                flex-shrink: 0;
+            }
+
+        .nav-section-title {
+            font-size: 10px;
+            color: #444;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            padding: 12px 14px 4px;
+        }
+
+        .sidebar-bottom {
+            padding: 16px 12px;
+            border-top: 1px solid #2a2a2a;
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: #2a2a2a;
+        }
+
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            background: #ff6a00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: none;
+            background: #1a1a1a;
+            padding: 14px 20px;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .hamburger {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+            .hamburger span {
+                width: 22px;
+                height: 2px;
+                background: #fff;
+                border-radius: 2px;
+            }
+
+        .page-content {
+            padding: 32px;
+            flex: 1;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.5);
+            z-index: 99;
+        }
+
+        @@media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .topbar {
+                display: flex;
+            }
+
+            .page-content {
+                padding: 20px 16px;
+            }
+
+            .overlay.show {
+                display: block;
+            }
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" /></svg>
+            </div>
+            <span class="logo-name">Pick<span>Me</span></span>
+            <span class="admin-badge">Admin</span>
+        </div>
+
+        <nav class="nav-menu">
+            <span class="nav-section-title">Vue d'ensemble</span>
+            <a class="nav-item @(ViewData["Page"]?.ToString() == "dashboard" ? "active" : "")" href="/Admin/Index">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" /></svg>
+                Tableau de bord
+            </a>
+
+            <span class="nav-section-title">Gestion</span>
+            <a class="nav-item @(ViewData["Page"]?.ToString() == "livreurs" ? "active" : "")" href="/Admin/Livreurs">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" /></svg>
+                Livreurs
+            </a>
+            <a class="nav-item @(ViewData["Page"]?.ToString() == "commandes" ? "active" : "")" href="/Admin/Commandes">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z" /></svg>
+                Commandes
+            </a>
+            <a class="nav-item @(ViewData["Page"]?.ToString() == "rapports" ? "active" : "")" href="/Admin/Rapports">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z" /></svg>
+                Rapports
+            </a>
+
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;margin-top:auto;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" /></svg>
+                    Déconnexion
+                </button>
+            </form>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="user-card">
+                <div class="user-avatar">A</div>
+                <div>
+                    <div class="user-name">Administrateur</div>
+                    <div class="user-role">Accès complet</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="hamburger" onclick="openSidebar()">
+                <span></span><span></span><span></span>
+            </div>
+            <span style="font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;color:#fff;">
+                Delivery<span style="color:#ff6a00;">App</span>
+            </span>
+            <div style="width:30px;"></div>
+        </div>
+
+        <div class="page-content">
+            @RenderBody()
+        </div>
+    </div>
+
+    <script>
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('overlay').classList.add('show');
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('show');
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

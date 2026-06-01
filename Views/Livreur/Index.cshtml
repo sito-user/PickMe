@@ -1,0 +1,586 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutLivreur.cshtml";
+    ViewData["Title"] = "Tableau de bord";
+    ViewData["Page"] = "dashboard";
+
+    var mesCommandes = ViewData["MesCommandes"] as List<DeliveryWeb.Models.Commande> ?? new();
+    var commandesDisponibles = ViewData["CommandesDisponibles"] as List<DeliveryWeb.Models.Commande> ?? new();
+    var livreur = ViewData["Livreur"] as DeliveryWeb.Models.Livreur;
+}
+
+@section Styles {
+    <style>
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+            .page-header h1 {
+                font-family: 'Nunito',sans-serif;
+                font-size: 24px;
+                font-weight: 800;
+                color: #1a1a1a;
+            }
+
+            .page-header p {
+                font-size: 14px;
+                color: #aaa;
+                margin-top: 4px;
+            }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 14px;
+            padding: 18px 20px;
+        }
+
+            .stat-card.orange {
+                border-left: 4px solid #ff6a00;
+            }
+
+        .stat-label {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-family: 'Nunito',sans-serif;
+            font-size: 30px;
+            font-weight: 900;
+            color: #1a1a1a;
+        }
+
+        .stat-card.orange .stat-value {
+            color: #ff6a00;
+        }
+
+        .section-title {
+            font-family: 'Nunito',sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .count-badge {
+            background: #ff6a00;
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+            .count-badge.green {
+                background: #22c55e;
+            }
+
+        .commande-card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 10px;
+        }
+
+            .commande-card.disponible {
+                border-left: 4px solid #ff6a00;
+            }
+
+            .commande-card.en-cours {
+                border-left: 4px solid #22c55e;
+            }
+
+        .commande-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .commande-id {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 3px;
+        }
+
+        .commande-client {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .statut-EnAttente {
+            background: #fff8e1;
+            color: #f59e0b;
+        }
+
+        .statut-Acceptee {
+            background: #e8f5e9;
+            color: #22c55e;
+        }
+
+        .statut-EnCours {
+            background: #fff3ed;
+            color: #ff6a00;
+        }
+
+        .statut-Livree {
+            background: #e8f5e9;
+            color: #16a34a;
+        }
+
+        .adresses {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .adresse-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        .dot-green {
+            background: #22c55e;
+        }
+
+        .dot-orange {
+            background: #ff6a00;
+        }
+
+        .meta-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .meta-tag {
+            background: #f7f5f2;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #555;
+            font-weight: 500;
+        }
+
+            .meta-tag.express {
+                background: #fff3ed;
+                color: #ff6a00;
+            }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .prix {
+            font-family: 'Nunito',sans-serif;
+            font-size: 17px;
+            font-weight: 900;
+            color: #ff6a00;
+        }
+
+        .btn-accepter {
+            background: #ff6a00;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Plus Jakarta Sans',sans-serif;
+        }
+
+        .btn-refuser {
+            background: #fff;
+            color: #888;
+            border: 1.5px solid #ece9e4;
+            padding: 9px 16px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* INTERFACE STATUT LIVREUR */
+        .statut-interface {
+            background: #f7f5f2;
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 12px;
+        }
+
+        .statut-interface-title {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .statut-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-statut {
+            border: 1.5px solid #ece9e4;
+            background: #fff;
+            color: #555;
+            padding: 8px 14px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .15s;
+            font-family: 'Plus Jakarta Sans',sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+            .btn-statut:hover {
+                border-color: #ff6a00;
+                color: #ff6a00;
+            }
+
+            .btn-statut.livree {
+                background: #16a34a;
+                color: #fff;
+                border-color: #16a34a;
+            }
+
+                .btn-statut.livree:hover {
+                    background: #15803d;
+                }
+
+            .btn-statut.probleme {
+                background: #fff;
+                color: #ef4444;
+                border-color: #fca5a5;
+            }
+
+        /* CLIENT TÉLÉPHONE */
+        .client-tel {
+            font-size: 12px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0,0,0,.15);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all .3s;
+            max-width: 320px;
+        }
+
+            .toast.show {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            .toast.success {
+                background: #16a34a;
+                color: #fff;
+            }
+
+            .toast.warning {
+                background: #f59e0b;
+                color: #fff;
+            }
+
+        .empty-section {
+            background: #f7f5f2;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        @@media (max-width:480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
+
+<div class="toast" id="toast"></div>
+
+@if (TempData["Success"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const t = document.getElementById('toast');
+            t.textContent = '@TempData["Success"]';
+            t.className = 'toast success show';
+            setTimeout(() => t.className = 'toast', 4000);
+        });
+    </script>
+}
+@if (TempData["Warning"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const t = document.getElementById('toast');
+            t.textContent = '@TempData["Warning"]';
+            t.className = 'toast warning show';
+            setTimeout(() => t.className = 'toast', 4000);
+        });
+    </script>
+}
+
+<div class="page-header">
+    <h1>Bonjour, @ViewData["UserName"] 👋</h1>
+    <p>@(livreur?.TypeVehicule.ToString()) · @(livreur?.HoraireDebut.ToString("HH:mm")) – @(livreur?.HoraireFin.ToString("HH:mm"))</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card orange">
+        <div class="stat-label">En cours</div>
+        <div class="stat-value">@ViewData["EnCours"]</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Livrées</div>
+        <div class="stat-value">@ViewData["Livrees"]</div>
+    </div>
+</div>
+
+<!-- ══ COMMANDES DISPONIBLES ══ -->
+<div class="section-title">
+    <span>📬 Commandes disponibles</span>
+    @if (commandesDisponibles.Any())
+    {
+        <span class="count-badge">@commandesDisponibles.Count nouvelle(s)</span>
+    }
+</div>
+
+@if (!commandesDisponibles.Any())
+{
+    <div class="empty-section">
+        Aucune commande @(livreur?.TypeVehicule.ToString() ?? "") disponible pour le moment.
+    </div>
+}
+else
+{
+    @foreach (var cmd in commandesDisponibles)
+    {
+        <div class="commande-card disponible">
+            <div class="commande-header">
+                <div>
+                    <div class="commande-id">Commande #@cmd.Id · @cmd.DateHeure.ToString("dd/MM à HH:mm")</div>
+                    <div class="commande-client">@cmd.NomExpediteur → @cmd.NomDestinataire</div>
+                </div>
+                <span class="badge statut-EnAttente">🔔 Nouvelle</span>
+            </div>
+
+            <div class="adresses">
+                <div class="adresse-row"><div class="dot dot-green"></div><span>@cmd.AdresseDepart</span></div>
+                <div class="adresse-row"><div class="dot dot-orange"></div><span>@cmd.AdresseArrivee</span></div>
+            </div>
+
+            <div class="meta-row">
+                <span class="meta-tag">@cmd.TypeVehicule</span>
+                <span class="meta-tag">@cmd.ModePaiement</span>
+                @if (cmd.EstExpress)
+                {
+                    <span class="meta-tag express">🚀 Express</span>
+                }
+                @if (cmd.Fragile)
+                {
+                    <span class="meta-tag" style="background:#fef2f2;color:#ef4444;">⚠️ Fragile</span>
+                }
+            </div>
+
+            <div class="actions">
+                <span class="prix">@cmd.PrixCalcule.ToString("N0") FCFA</span>
+                <div style="display:flex;gap:8px;">
+                    <form asp-action="Refuser" method="post" style="margin:0;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="commandeId" value="@cmd.Id" />
+                        <button type="submit" class="btn-refuser">✗ Refuser</button>
+                    </form>
+                    <form asp-action="Accepter" method="post" style="margin:0;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="commandeId" value="@cmd.Id" />
+                        <button type="submit" class="btn-accepter">✓ Accepter</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<!-- ══ MES LIVRAISONS EN COURS ══ -->
+@{
+    var enCoursList = mesCommandes
+        .Where(c => c.Statut != DeliveryWeb.Models.StatutCommande.Livree
+                 && c.Statut != DeliveryWeb.Models.StatutCommande.Annulee)
+        .ToList();
+}
+
+@if (enCoursList.Any())
+{
+    <div class="section-title" style="margin-top:24px;">
+        <span>🚴 Mes livraisons en cours</span>
+        <span class="count-badge green">@enCoursList.Count</span>
+    </div>
+
+    @foreach (var cmd in enCoursList)
+    {
+        <div class="commande-card en-cours">
+            <div class="commande-header">
+                <div>
+                    <div class="commande-id">Commande #@cmd.Id · @cmd.DateHeure.ToString("dd/MM à HH:mm")</div>
+                    <div class="commande-client">
+                        Client : @(cmd.Client != null ? $"{cmd.Client.Prenom} {cmd.Client.Nom}" : "—")
+                    </div>
+                </div>
+                <span class="badge statut-@cmd.Statut.ToString()">@cmd.Statut</span>
+            </div>
+
+            <div class="adresses">
+                <div class="adresse-row"><div class="dot dot-green"></div><span>@cmd.AdresseDepart</span></div>
+                <div class="adresse-row"><div class="dot dot-orange"></div><span>@cmd.AdresseArrivee</span></div>
+            </div>
+
+            <div class="meta-row">
+                <span class="meta-tag">@cmd.TypeVehicule</span>
+                <span class="meta-tag">@cmd.ModePaiement</span>
+                @if (cmd.EstExpress)
+                {
+                    <span class="meta-tag express">🚀 Express</span>
+                }
+                <span class="client-tel">📞 @cmd.TelDestinataire</span>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <span class="prix">@cmd.PrixCalcule.ToString("N0") FCFA</span>
+                @if (!string.IsNullOrEmpty(cmd.InfosColis))
+                {
+                    <span style="font-size:12px;color:#aaa;">📦 @cmd.InfosColis</span>
+                }
+            </div>
+
+            <!-- ✅ INTERFACE MISE À JOUR STATUT -->
+            <div class="statut-interface">
+                <div class="statut-interface-title">📡 Mettre à jour le statut</div>
+                <div class="statut-btns">
+                    <form asp-action="MettreAJourStatut" method="post" style="margin:0;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="commandeId" value="@cmd.Id" />
+                        <input type="hidden" name="statut" value="EnRoute" />
+                        <button type="submit" class="btn-statut">🚴 En route</button>
+                    </form>
+                    <form asp-action="MettreAJourStatut" method="post" style="margin:0;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="commandeId" value="@cmd.Id" />
+                        <input type="hidden" name="statut" value="EnLivraison" />
+                        <button type="submit" class="btn-statut">📦 En livraison</button>
+                    </form>
+                    <form asp-action="MettreAJourStatut" method="post" style="margin:0;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="commandeId" value="@cmd.Id" />
+                        <input type="hidden" name="statut" value="Livree" />
+                        <button type="submit" class="btn-statut livree">✅ Marquer comme livrée</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<!-- SignalR pour mises à jour en temps réel -->
+@section Scripts {
+    <script>
+        const livreurId      = '@livreur?.Id';
+        const typeVehicule   = '@livreur?.TypeVehicule.ToString()';
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/trackingHub")
+            .withAutomaticReconnect()
+            .build();
+
+        // ✅ Nouvelle commande disponible → notification + rechargement
+        connection.on("NouvelleCommandeDisponible", (commande) => {
+            afficherToast(`🔔 Nouvelle commande disponible ! ${commande.adresseDepart} → ${commande.adresseArrivee} · ${commande.prix} FCFA`, 'orange');
+            // Recharger la liste après 2 secondes
+            setTimeout(() => location.reload(), 2000);
+        });
+
+        // Statut commande mis à jour par simulation
+        connection.on("StatutCommandeMisAJour", (commandeId, statut) => {
+            if (statut === "Livree") {
+                afficherToast(`✅ Commande #${commandeId} livrée !`, 'success');
+                setTimeout(() => location.reload(), 3000);
+            }
+        });
+
+        connection.start().then(async () => {
+            // ✅ Rejoindre groupe livreur ET groupe véhicule
+            await connection.invoke("RejoindreGroupeLivreur", livreurId, typeVehicule);
+            console.log("✅ Connecté — groupe véhicule:", typeVehicule);
+        }).catch(e => console.error("SignalR:", e));
+
+        function afficherToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + type + ' show';
+            setTimeout(() => { t.className = 'toast'; }, 5000);
+        }
+    </script>
+}

@@ -1,0 +1,296 @@
+﻿@model List<DeliveryWeb.Models.Commande>
+@{
+    Layout = "~/Views/Shared/_LayoutLivreur.cshtml";
+    ViewData["Title"] = "Mes livraisons";
+    ViewData["Page"] = "historique";
+
+    // ✅ Calcul AVANT le rendu HTML
+    var totalLivraisons = Model.Count;
+    var nbLivrees = Model.Count(c => c.Statut == DeliveryWeb.Models.StatutCommande.Livree);
+    var revenusTotaux = Model
+        .Where(c => c.Statut == DeliveryWeb.Models.StatutCommande.Livree)
+        .Sum(c => c.PrixCalcule);
+}
+
+@section Styles {
+    <style>
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+            .page-header h1 {
+                font-family: 'Nunito',sans-serif;
+                font-size: 24px;
+                font-weight: 800;
+                color: #1a1a1a;
+            }
+
+            .page-header p {
+                font-size: 14px;
+                color: #aaa;
+                margin-top: 4px;
+            }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 14px;
+            padding: 18px 20px;
+        }
+
+            .stat-card.orange {
+                border-left: 4px solid #ff6a00;
+            }
+
+        .stat-label {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-family: 'Nunito',sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            color: #1a1a1a;
+        }
+
+        .stat-card.orange .stat-value {
+            color: #ff6a00;
+        }
+
+        .commande-card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 10px;
+            transition: box-shadow .2s;
+        }
+
+            .commande-card:hover {
+                box-shadow: 0 4px 20px rgba(0,0,0,.06);
+            }
+
+        .commande-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .commande-id {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 3px;
+        }
+
+        .commande-client {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .statut-EnAttente {
+            background: #fff8e1;
+            color: #f59e0b;
+        }
+
+        .statut-Acceptee {
+            background: #e8f5e9;
+            color: #22c55e;
+        }
+
+        .statut-EnCours {
+            background: #fff3ed;
+            color: #ff6a00;
+        }
+
+        .statut-Livree {
+            background: #e8f5e9;
+            color: #16a34a;
+        }
+
+        .statut-Annulee {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .adresses {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .adresse-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        .dot-green {
+            background: #22c55e;
+        }
+
+        .dot-orange {
+            background: #ff6a00;
+        }
+
+        .commande-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-top: 10px;
+            border-top: 1px solid #f7f5f2;
+        }
+
+        .meta {
+            font-size: 12px;
+            color: #aaa;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .meta-tag {
+            background: #f7f5f2;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .prix {
+            font-family: 'Nunito',sans-serif;
+            font-size: 16px;
+            font-weight: 900;
+            color: #ff6a00;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty p {
+            font-size: 15px;
+            color: #aaa;
+        }
+
+        @@media (max-width:600px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
+
+<div class="page-header">
+    <h1>Mes livraisons 📦</h1>
+    <p>Historique complet de toutes vos livraisons</p>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+    <div class="stat-card orange">
+        <div class="stat-label">Total commandes</div>
+        <div class="stat-value">@totalLivraisons</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Livrées</div>
+        <div class="stat-value">@nbLivrees</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Revenus totaux</div>
+        <div class="stat-value" style="font-size:20px;">
+            @revenusTotaux.ToString("N0")
+            <span style="font-size:12px;color:#aaa;font-weight:500;">FCFA</span>
+        </div>
+    </div>
+</div>
+
+<!-- LISTE -->
+@if (!Model.Any())
+{
+    <div class="empty">
+        <div class="empty-icon">📭</div>
+        <p>Aucune livraison effectuée pour le moment</p>
+    </div>
+}
+else
+{
+    @foreach (var cmd in Model)
+    {
+        <div class="commande-card">
+            <div class="commande-header">
+                <div>
+                    <div class="commande-id">Commande #@cmd.Id · @cmd.DateHeure.ToString("dd/MM/yyyy à HH:mm")</div>
+                    <div class="commande-client">
+                        Client : @(cmd.Client != null ? $"{cmd.Client.Prenom} {cmd.Client.Nom}" : "—")
+                    </div>
+                </div>
+                <span class="badge statut-@cmd.Statut.ToString()">@cmd.Statut</span>
+            </div>
+
+            <div class="adresses">
+                <div class="adresse-row">
+                    <div class="dot dot-green"></div>
+                    <span>@cmd.AdresseDepart</span>
+                </div>
+                <div class="adresse-row">
+                    <div class="dot dot-orange"></div>
+                    <span>@cmd.AdresseArrivee</span>
+                </div>
+            </div>
+
+            <div class="commande-footer">
+                <div class="meta">
+                    <span class="meta-tag">@cmd.TypeVehicule</span>
+                    <span class="meta-tag">@cmd.ModePaiement</span>
+                    @if (cmd.EstExpress)
+                    {
+                        <span class="meta-tag" style="background:#fff3ed;color:#ff6a00;">🚀 Express</span>
+                    }
+                    @if (cmd.Fragile)
+                    {
+                        <span class="meta-tag" style="background:#fef2f2;color:#ef4444;">⚠️ Fragile</span>
+                    }
+                </div>
+                <span class="prix">@cmd.PrixCalcule.ToString("N0") FCFA</span>
+            </div>
+        </div>
+    }
+}

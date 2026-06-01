@@ -1,0 +1,436 @@
+﻿@model DeliveryWeb.ViewModels.RegisterLivreurViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Devenir livreur";
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PickMe — Devenir livreur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f7f5f2;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid #ece9e4;
+            padding: 14px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: #ff6a00;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .logo-icon svg {
+                width: 20px;
+                height: 20px;
+                fill: #fff;
+            }
+
+        .logo-name {
+            font-family: 'Nunito', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: #1a1a1a;
+        }
+
+            .logo-name span {
+                color: #ff6a00;
+            }
+
+        .nav-link {
+            font-size: 14px;
+            color: #888;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 18px;
+            border: 1.5px solid #ece9e4;
+            border-radius: 9px;
+        }
+
+            .nav-link:hover {
+                border-color: #ff6a00;
+                color: #ff6a00;
+            }
+
+        .container {
+            max-width: 660px;
+            margin: 40px auto;
+            padding: 0 20px 60px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header-icon {
+            width: 56px;
+            height: 56px;
+            background: #fff3ed;
+            border: 2px solid #ffd4b8;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin: 0 auto 16px;
+        }
+
+        .header h1 {
+            font-family: 'Nunito', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .info-banner {
+            background: #fff3ed;
+            border: 1px solid #ffd4b8;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+            .info-banner strong {
+                color: #ff6a00;
+                display: block;
+                margin-bottom: 4px;
+            }
+
+        .form-card {
+            background: #fff;
+            border: 1px solid #ece9e4;
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-family: 'Nunito', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .row2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+            .field label {
+                display: block;
+                font-size: 11px;
+                color: #aaa;
+                font-weight: 600;
+                margin-bottom: 5px;
+                text-transform: uppercase;
+                letter-spacing: .5px;
+            }
+
+            .field input, .field select {
+                width: 100%;
+                background: #fafaf9;
+                border: 1.5px solid #ece9e4;
+                border-radius: 10px;
+                padding: 12px 14px;
+                color: #1a1a1a;
+                font-size: 14px;
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                transition: border .15s;
+            }
+
+                .field input:focus, .field select:focus {
+                    outline: none;
+                    border-color: #ff6a00;
+                    background: #fff;
+                }
+
+                .field input::placeholder {
+                    color: #ccc;
+                }
+
+        span.error-msg {
+            font-size: 11px;
+            color: #e74c3c;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .vehicule-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .vehicule-opt {
+            border: 1.5px solid #ece9e4;
+            border-radius: 12px;
+            padding: 16px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+            .vehicule-opt:hover {
+                border-color: #ff6a00;
+                background: #fff3ed;
+            }
+
+            .vehicule-opt input[type=radio] {
+                display: none;
+            }
+
+            .vehicule-opt.selected {
+                border-color: #ff6a00;
+                background: #fff3ed;
+            }
+
+        .vehicule-icon {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+
+        .vehicule-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .vehicule-tarif {
+            font-size: 10px;
+            color: #aaa;
+            margin-top: 3px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #ff6a00;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+            .btn-submit:hover {
+                background: #e55f00;
+            }
+
+        .error-box {
+            background: #fff5f5;
+            border: 1px solid #fcc;
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: #c0392b;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        @@media (max-width: 600px) {
+            .navbar {
+                padding: 12px 20px;
+            }
+
+            .row2 {
+                grid-template-columns: 1fr;
+            }
+
+            .vehicule-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a class="logo" href="/">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" /></svg>
+            </div>
+            <span class="logo-name">Pick<span>Me</span></span>
+        </a>
+        <a class="nav-link" href="/Account/Login">Se connecter</a>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">🚴</div>
+            <h1>Devenir livreur</h1>
+            <p>Rejoignez notre réseau et commencez à gagner dès aujourd'hui</p>
+        </div>
+
+        <div class="info-banner">
+            <strong>⏳ Comment ça marche ?</strong>
+            Remplissez le formulaire → Votre profil est examiné par notre équipe sous 24h → Une fois approuvé, vous accédez à votre tableau de bord et recevez des commandes.
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="error-box">
+                @Html.ValidationSummary(true)
+            </div>
+        }
+
+        <form asp-controller="Livreur" asp-action="Register" method="post">
+            @Html.AntiForgeryToken()
+
+            <!-- INFOS PERSONNELLES -->
+            <div class="form-card">
+                <div class="card-title">👤 Informations personnelles</div>
+                <div class="row2">
+                    <div class="field">
+                        <label>Nom</label>
+                        <input asp-for="Nom" placeholder="Koné" />
+                        <span asp-validation-for="Nom" class="error-msg"></span>
+                    </div>
+                    <div class="field">
+                        <label>Prénom</label>
+                        <input asp-for="Prenom" placeholder="Amara" />
+                        <span asp-validation-for="Prenom" class="error-msg"></span>
+                    </div>
+                </div>
+                <div class="row2">
+                    <div class="field">
+                        <label>Téléphone</label>
+                        <input asp-for="Telephone" type="tel" placeholder="+225 07 00 00 00" />
+                        <span asp-validation-for="Telephone" class="error-msg"></span>
+                    </div>
+                    <div class="field">
+                        <label>Email</label>
+                        <input asp-for="Email" type="email" placeholder="vous@email.com" />
+                        <span asp-validation-for="Email" class="error-msg"></span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Numéro de permis</label>
+                    <input asp-for="NumPermis" placeholder="Ex : CI-2021-XXXX" />
+                    <span asp-validation-for="NumPermis" class="error-msg"></span>
+                </div>
+            </div>
+
+            <!-- VÉHICULE -->
+            <div class="form-card">
+                <div class="card-title">🚗 Type de véhicule</div>
+                <div class="vehicule-grid">
+                    <label class="vehicule-opt" id="opt-moto">
+                        <input type="radio" asp-for="TypeVehicule" value="Moto"
+                               onchange="selectVehicule('opt-moto')" />
+                        <div class="vehicule-icon">🏍️</div>
+                        <div class="vehicule-label">Moto</div>
+                        <div class="vehicule-tarif">150 FCFA/km</div>
+                    </label>
+                    <label class="vehicule-opt" id="opt-voiture">
+                        <input type="radio" asp-for="TypeVehicule" value="Voiture"
+                               onchange="selectVehicule('opt-voiture')" />
+                        <div class="vehicule-icon">🚗</div>
+                        <div class="vehicule-label">Voiture</div>
+                        <div class="vehicule-tarif">350 FCFA/km</div>
+                    </label>
+                    <label class="vehicule-opt" id="opt-camion">
+                        <input type="radio" asp-for="TypeVehicule" value="Camionnette"
+                               onchange="selectVehicule('opt-camion')" />
+                        <div class="vehicule-icon">🚐</div>
+                        <div class="vehicule-label">Camionnette</div>
+                        <div class="vehicule-tarif">500 FCFA/km</div>
+                    </label>
+                </div>
+                <span asp-validation-for="TypeVehicule" class="error-msg"></span>
+
+                <div class="row2" style="margin-top:16px;">
+                    <div class="field">
+                        <label>Heure de début</label>
+                        <input asp-for="HoraireDebut" type="time" />
+                        <span asp-validation-for="HoraireDebut" class="error-msg"></span>
+                    </div>
+                    <div class="field">
+                        <label>Heure de fin</label>
+                        <input asp-for="HoraireFin" type="time" />
+                        <span asp-validation-for="HoraireFin" class="error-msg"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MOT DE PASSE -->
+            <div class="form-card">
+                <div class="card-title">🔒 Sécurité</div>
+                <div class="row2">
+                    <div class="field">
+                        <label>Mot de passe</label>
+                        <input asp-for="MotDePasse" type="password" placeholder="Minimum 8 caractères" />
+                        <span asp-validation-for="MotDePasse" class="error-msg"></span>
+                    </div>
+                    <div class="field">
+                        <label>Confirmer</label>
+                        <input asp-for="Confirmation" type="password" placeholder="Répéter" />
+                        <span asp-validation-for="Confirmation" class="error-msg"></span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Soumettre ma candidature →</button>
+
+        </form>
+    </div>
+
+    <script>
+        function selectVehicule(id) {
+            document.querySelectorAll('.vehicule-opt').forEach(el => el.classList.remove('selected'));
+            document.getElementById(id).classList.add('selected');
+        }
+    </script>
+</body>
+</html>
