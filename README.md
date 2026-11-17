@@ -58,4 +58,4 @@ La météo est facultative. Pour l'activer, ajouter une clé OpenWeatherMap dans
 
 ## Auteure
 
-Aya Aidibi, [aya-portefolio.netlify.app](https://aya-portefolio.netlify.app)
+Aya Aidibi, [aya-aidibi-portfolio.netlify.app](https://aya-aidibi-portfolio.netlify.app)
